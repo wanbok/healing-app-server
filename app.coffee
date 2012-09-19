@@ -4,8 +4,6 @@
 express = require 'express'
 require 'express-namespace'
 
-routes = require './routes'
-user = require './routes/user'
 path = require 'path'
 GLOBAL._ = require 'underscore'
 
@@ -34,7 +32,6 @@ app.configure 'development', ->
   app.use(express.errorHandler());
 
 # Routes
-require('./apps/site/routes')(app)
 require('./apps/terminal/routes')(app)
 require('./apps/payment/routes')(app)
 
