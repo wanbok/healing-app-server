@@ -1,5 +1,3 @@
-require './fixture'
-
 terminal = {}
 terminal.all = (callback) => 
   client.query 'SELECT * FROM na2_admin', (error, results, fields) =>
