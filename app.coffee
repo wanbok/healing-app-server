@@ -37,3 +37,5 @@ require('./apps/payment/routes')(app)
 
 app.listen app.get('port'), ->
   console.log "Express server listening on port " + app.get('port')
+
+require('./mysql_configure')

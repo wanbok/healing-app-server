@@ -1,14 +1,18 @@
+terminal = require '../../models/terminal'
 
 routes = (app) ->
 	app.namespace '/terminals', ->
 		app.get '/', (req, res) ->
-			if req.query.start_region? # /terminals
-				# 해당 지역을 갖는 터미널 코드/터미널 명 리턴
-				if isEmptyQuery(res, "start_region", req.query.start_region)
-					return
-				return resAsJson(res, [{name: "동서울터미널", tcode: 1}, {name: "서울 남부터미널", tcode: 2}, {name: "상봉터미널", tcode: 3}, {name: "서부시외버스터미널", tcode: 4}])
-			
-			return resAsJson(res, [{name: "서울", code: 1}, {name: "부산", code: 2}])
+			# 시작 지역은 일단 제거.
+			# if req.query.start_region? # /terminals
+			# 	# 해당 지역을 갖는 터미널 코드/터미널 명 리턴
+			# 	if isEmptyQuery(res, "start_region", req.query.start_region)
+			# 		return
+			# 	return somthing
+			terminal.all (error, result) ->
+				if error
+				  return resAsJson res, {error: "error"}
+				return resAsJson res, result
 
 		app.get '/search', (req, res) ->
 			if req.query.latitude? and req.query.longitude?
@@ -20,29 +24,34 @@ routes = (app) ->
 			res.json {error: "검색결과가 없습니다."}
 			
 		app.get '/:tcode', (req, res) ->
-			if req.query.arrive_region? # /terminals/:tcode?arrive_region=도착지역
-				# 해당 터미널과 도착지역이 갖는 도착터미널 목록 리턴
-				if isEmptyQuery(res, "arrive_region", req.query.arrive_region)
-					return
-				return resAsJson(res, [{name: "전북터미널", code: 1}, {name: "광주터미널", code: 2}, {name: "전남터미널", code: 3}])
 
-			if req.query.arrive_terminal? # /terminals/:tcode?arrive_terminal=도착터미널
+			if req.query.heng_code? # /terminals/:tcode?heng_code=도착터미널
 				# 여기서 시간표 및 요금표 나옴
-				if isEmptyQuery(res, "arrive_terminal", req.query.arrive_terminal)
+				if isEmptyQuery(res, "bang_code", req.query.bang_code)
 					return
-				data = [
-					{name: "전북터미널", code: 1, timetables: [{time: "11:10"}, {time: "15:10"}, {time: "19:00"}], charge: 10000},
-				 	{name: "광주터미널", code: 2, timetables: [{time: "10:00"}, {time: "16:00"}, {time: "22:00"}], charge: 12000},
-				 	{name: "전남터미널", code: 3, timetables: [{time: "16:00"}, {time: "19:45"}, {time: "24:00"}], charge: 15000}
-				]
-				return resAsJson(res, data)
+				if isEmptyQuery(res, "heng_code", req.query.heng_code)
+					return
+				terminal.timetable req.params.tcode, req.query.bang_code, req.query.heng_code, req.query.wcode, (error, result) ->
+					if error
+					  return resAsJson res, {error: "error"}
+					return resAsJson res, result
+
+			else if req.query.bang_code? # /terminals/:tcode?bang_code=도착지역
+				# 해당 터미널과 도착지역이 갖는 도착터미널 목록 리턴
+				if isEmptyQuery(res, "bang_code", req.query.bang_code)
+					return
+				terminal.arrive_terminal req.params.tcode, req.query.bang_code, (error, result) ->
+					if error
+					  return resAsJson res, {error: "error"}
+					return resAsJson res, result
 
 			# /terminals/:tcode
 			# 해당 터미널이 갖는 행선지(도착지역)목록 리턴
-			return resAsJson(res, [{name: "전라도", code: 1}, {name: "경상도", code: 2}, {name: "충청도", code: 3}])
-
-
-
+			else
+				terminal.arrive_region req.params.tcode, (error, result) ->
+					if error
+					  return resAsJson res, {error: "error"}
+					return resAsJson res, result
 
 resAsJson = (res, json) ->
 	res.format
