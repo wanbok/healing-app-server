@@ -1,2 +1,2 @@
 global.mongoose = require 'mongoose'
-global.db = mongoose.createConnection 'localhost', 'easybus'
+global.mongoDb = mongoose.createConnection 'localhost', 'easybus'

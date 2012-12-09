@@ -33,6 +33,7 @@ app.configure 'development', ->
 
 # Routes
 require('./apps/terminal/routes')(app)
+require('./apps/notifier/routes')(app)
 require('./apps/payment/routes')(app)
 
 app.listen app.get('port'), ->
