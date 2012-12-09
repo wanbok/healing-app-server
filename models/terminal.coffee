@@ -52,7 +52,7 @@ terminal.arrive_terminal = (tcode, bang_code, callback) =>
 
 terminal.timetable = (tcode, bang_code, heng_code, wcode, callback) =>
   select_query = null
-  if wcode is 'undefined' or wcode is null or wcode is ''
+  if typeof wcode is 'undefined' or wcode is null or wcode is ''
     select_query = "SELECT * FROM na2_bustime WHERE tcode = #{tcode} AND bang_code = #{bang_code} AND heng_code = #{heng_code}"
   else
     select_query = "SELECT * FROM na2_bustime WHERE tcode = #{tcode} AND bang_code = #{bang_code} AND heng_code = #{heng_code} AND wcode = #{wcode}"
