@@ -3,7 +3,7 @@ global.mysql = require 'mysql'
 global.mysqlDb = mysql.createConnection #'mysql://na2:arsna2@nadata.codns.com:6612/na2'
   host     : 'nadata.codns.com',
   port     : 6612,
-  # charset  : 'euckr',
+  charset  : 'EUCKR_CHARACTER_CI',
   user     : 'na2',
   password : 'arsna2',
   database : 'na2'

@@ -1,4 +1,21 @@
 terminal = {}
+
+terminal.search = (search, callback) => 
+  mysqlDb.query 'SELECT * FROM na2_admin WHERE tname like "%#{search}%"', (error, results, fields) =>
+    if(error)
+      console.log("데이터베이스 조회 실패: " + error)
+      callback error, null
+
+    results_for_return = []
+    for result in results
+      results_for_return.push {
+        tcode: result['tcode'],
+        tname: result['tname'],
+        latitude: result['gps_info1'],
+        longitude: result['gps_info2'],
+        regdate: result['regdate']}
+
+    callback null, results_for_return
 terminal.all = (callback) => 
   mysqlDb.query 'SELECT * FROM na2_admin', (error, results, fields) =>
     if(error)
@@ -10,6 +27,8 @@ terminal.all = (callback) =>
       results_for_return.push {
         tcode: result['tcode'],
         tname: result['tname'],
+        latitude: result['gps_info1'],
+        longitude: result['gps_info2'],
         regdate: result['regdate']}
 
     callback null, results_for_return

@@ -1,4 +1,5 @@
 terminal = require '../../models/terminal'
+SearchLog = require '../../models/searchlog'
 
 routes = (app) ->
 	app.namespace '/terminals', ->
@@ -9,10 +10,17 @@ routes = (app) ->
 			# 	if isEmptyQuery(res, "start_region", req.query.start_region)
 			# 		return
 			# 	return somthing
-			terminal.all (error, result) ->
-				if error
-				  return resAsJson res, {error: "error"}
-				return resAsJson res, result
+			if req.query.search?
+				terminal.search req.query.search, (error, result) ->
+					if error
+					  return resAsJson res, {error: "error"}
+					return resAsJson res, result
+			 
+			else
+				terminal.all (error, result) ->
+					if error
+				 		return resAsJson res, {error: "error"}
+					return resAsJson res, result
 
 		app.get '/search', (req, res) ->
 			if req.query.latitude? and req.query.longitude?
@@ -24,7 +32,6 @@ routes = (app) ->
 			res.json {error: "검색결과가 없습니다."}
 			
 		app.get '/:tcode', (req, res) ->
-
 			if req.query.heng_code? # /terminals/:tcode?heng_code=도착터미널
 				# 여기서 시간표 및 요금표 나옴
 				if isEmptyQuery(res, "bang_code", req.query.bang_code)
@@ -34,6 +41,19 @@ routes = (app) ->
 				terminal.timetable req.params.tcode, req.query.bang_code, req.query.heng_code, req.query.wcode, (error, result) ->
 					if error
 					  return resAsJson res, {error: "error"}
+					if req.query.device_id?
+					  searchlog = {
+					  	expression: result[0]['tname'] + " 출발, " + result[0]['heng_name'] + " 도착",
+					  	tcode: result[0]['tcode'],
+					  	bang_code: result[0]['bang_code'],
+					  	heng_code: result[0]['heng_code'],
+					  	device_id: req.query.device_id
+					  	updated_date: Date.now()
+					  }
+					  SearchLog.update {expression: searchlog.expression}, {$set: searchlog}, {upsert: true}, (err, numberAffected, raw) ->
+					  	if err
+					  		console.log "SearchLog has an error"
+					  	console.log "Number of SearchLog updated : #{numberAffected}"
 					return resAsJson res, result
 
 			else if req.query.bang_code? # /terminals/:tcode?bang_code=도착지역
@@ -59,7 +79,7 @@ resAsJson = (res, json) ->
 			res.json json
 
 isEmptyQuery = (res, query, value) ->
-	if value is "" or null
+	if typeof value is 'undefined' or value is null or value is ""
 		res.json {error: "#{query} is empty"}
 		return true
 
