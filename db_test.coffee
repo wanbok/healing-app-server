@@ -3,8 +3,8 @@ mysql = require 'mysql'
 client = mysql.createConnection #'mysql://na2:arsna2@nadata.codns.com:6612/na2'
   host     : 'nadata.codns.com',
   port     : 6612,
-  user     : 'na2',
-  password : 'arsna2'
+  user     : 'root',
+  password : '12341234'
   database : 'na2'
 
 client.connect()
