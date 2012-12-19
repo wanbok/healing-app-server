@@ -1,3 +1,5 @@
+helper = require './helper'
+
 terminal = {}
 
 terminal.search = (search, callback) => 
@@ -92,7 +94,7 @@ terminal.timetable = (tcode, bang_code, heng_code, wcode, callback) =>
         heng_name: result['heng_name'],
         bustype: result['bustype'],
         wcode: result['wcode'],
-        content: result['content'],
+        content: helper.parseTimeTableFromString(result['content']),
         regdate: result['regdate']}
 
     callback null, results_for_return
