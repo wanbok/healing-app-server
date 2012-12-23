@@ -15,7 +15,6 @@ module.exports.parseInformationBus = (source) ->
 	result = {}
 	result.source = source
 	arrInfo = []
-	result.info = arrInfo
 	info = {} # 차량 종류에 속하는 정보들 (2:차량종류, 3:시간표, 4:배차간격, 5:요금 및 소요시간)
 	return if typeof source isnt 'string'
 	arrFirst = source.split '('
@@ -25,7 +24,7 @@ module.exports.parseInformationBus = (source) ->
 		parsedNumber = parseInt(arrFirst[i][0]) # '(' 으로 분할한 스트링중 첫번째 스트링은 숫자 이므로 그것으로 비교
 		if !(parsedNumber > currentNumber ||			# 현 배열에 추가
 		parsedNumber < 2 || parsedNumber > 5)			# 차량 종류 배열 외의 정보
-			arrInfo.push info
+			arrInfo.push info unless isEmptyObj(info)
 			info = {}
 		currentNumber = parsedNumber
 		content = arrFirst[i].split('*')[0].substring(2)
@@ -43,7 +42,9 @@ module.exports.parseInformationBus = (source) ->
 				info.interval = content
 			when 5
 				info.spendingTime = content
-	arrInfo.push info
+	arrInfo.push info unless isEmptyObj(info)
+	if arrInfo.length > 0
+		result.info = arrInfo
 	return result
 
 parseTimeTableFromString = (source) ->
