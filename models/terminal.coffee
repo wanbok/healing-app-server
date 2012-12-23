@@ -94,7 +94,7 @@ terminal.timetable = (tcode, bang_code, heng_code, wcode, callback) =>
         heng_name: result['heng_name'],
         bustype: result['bustype'],
         wcode: result['wcode'],
-        content: helper.parseTimeTableFromString(result['content']),
+        content: helper.parseInformationBus(result['content']),
         regdate: result['regdate']}
 
     callback null, results_for_return
