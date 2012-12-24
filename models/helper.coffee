@@ -9,7 +9,7 @@
 # (8) 예비용
 # (9) 예비용
 # (10) 예비용
-# 위에서 2~5가 루틴가능
+# 위의 2~5가 루틴가능
 
 module.exports.parseInformationBus = (source) ->
 	result = {}

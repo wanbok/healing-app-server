@@ -27,6 +27,7 @@ terminal.all = (callback) =>
     results_for_return = []
     for result in results
       console.log {config: mysqlDb.config, result: result}
+      continue if result['tcode'] is '000'
       results_for_return.push {
         tcode: result['tcode'],
         tname: result['tname'],
