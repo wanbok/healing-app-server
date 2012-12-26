@@ -16,11 +16,11 @@ module.exports.parseInformationBus = (source) ->
 	result.source = source
 	arrInfo = []
 	info = {} # 차량 종류에 속하는 정보들 (2:차량종류, 3:시간표, 4:배차간격, 5:요금 및 소요시간)
+	currentNumber = 0
 	return if typeof source isnt 'string'
 	arrFirst = source.split '('
 	for i in [1..arrFirst.length] 		# 가장 첫번째 데이터는 시간과 무관함. 차량의 종류별 시간표들
 		continue if typeof arrFirst[i] isnt 'string'
-		currentNumber = 0
 		parsedNumber = parseInt(arrFirst[i][0]) # '(' 으로 분할한 스트링중 첫번째 스트링은 숫자 이므로 그것으로 비교
 		if !(parsedNumber > currentNumber ||			# 현 배열에 추가
 		parsedNumber < 2 || parsedNumber > 5)			# 차량 종류 배열 외의 정보
