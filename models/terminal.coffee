@@ -74,11 +74,11 @@ terminal.arrive_terminal = (tcode, bang_code, callback) =>
     callback null, results_for_return
 
 terminal.timetable = (tcode, bang_code, heng_code, wcode, callback) =>
-  select_query = null
   if typeof wcode is 'undefined' or wcode is null or wcode is ''
-    select_query = "SELECT * FROM na2_bustime WHERE tcode = #{tcode} AND bang_code = #{bang_code} AND heng_code = #{heng_code}"
-  else
-    select_query = "SELECT * FROM na2_bustime WHERE tcode = #{tcode} AND bang_code = #{bang_code} AND heng_code = #{heng_code} AND wcode = #{wcode}"
+    wcode = new Date().getDay() + 1
+    # console.log "Default day : #{wcode}, today : #{new Date()}"
+
+  select_query = "SELECT * FROM na2_bustime WHERE tcode = #{tcode} AND bang_code = #{bang_code} AND heng_code = #{heng_code} AND wcode = #{wcode}"
   mysqlDb.query select_query, (error, results, fields) =>
     if(error)
       console.log("데이터베이스 조회 실패: " + error)
@@ -99,6 +99,64 @@ terminal.timetable = (tcode, bang_code, heng_code, wcode, callback) =>
         regdate: result['regdate']}
 
     callback null, results_for_return
+
+terminal.sampleTimetable = (callback) =>
+  sample_source = '(1)예비용 첫번째이올시다.*
+    (2)우등고속 차량 시*은
+    (3)오전7시30분, 8시45분[예아], 10시20분, 11시50분, 
+    오후 12시30분, 1시 30분[예아], 2시35분[gg], 4시50분, 7시55분,*
+    (4)배차간격은 1시간50분에서 2시20분입니다.*
+    (5)소요시간은 약 2시간 50분입니다.*
+    (6)요금은 23000원*이고
+    (7)서울, 대전, 대구, 부산, 찍고 아항*
+    (8)첫번째 아래쪽 예비 1번*
+    (9)첫번째 아래쪽 예비 2번*
+    (10)첫번째 아래쪽 예비 3번*
+    (11)첫번째 아래쪽 예비 4번*
+    (12)첫번째 아래쪽 예비 5번*
+    (13)첫번째 아래쪽 예비 6번*
+    (14)첫번째 아래쪽 예비 7번*
+    (15)첫번째 아래쪽 예비 8번*
+    (1)예비용 두번째이올시다.*
+    (2)일반 차량시각*은
+    (3)오전7시30분, 8시45분, 10시20분, 11시50분, 
+    오후 12시30분, 1시 30분, 2시35분, 4시50분[ㅇㅇ], 7시55분,*
+    (4)배차간격은 1시간50분에서 2시20분입니다.*
+    (5)소요시간은 약 2시간 50분입니다.*
+    (6)요금은 23000원*
+    (7)마드리드, 몬트리올*
+    (8)두번째 아래쪽 예비 1번*
+    (1)세번째 예비용이다*
+    (2)무정차 차량시각*은
+    (3)오전7시30분, 8시45분, 10시20분, 11시50분, 
+    오후 12시30분, 1시 30분, 2시35분[그래요], 4시50분, 7시55분,*
+    (4)배차간격은 1시간50분에서 2시20분입니다.*
+    (5)요금은 23000원이고 소요시간은 약 2시간 50분입니다.*
+    (2)안양,부천, 천안 경유 차량 시각*은
+    (3)오전7시30분, 8시45분, 10시20분, 11시50분, 
+    오후 12시30분, 1시 30분, 2시35분, 4시50분, 7시55분,*
+    (4)배차간격은 1시간50분에서 2시20분입니다,*
+    (5)소요시간은 약 2시간 50분입니다.*
+    (6)요금은 23000원이고*
+    (7)도쿄, 아테네*
+    (8)세번째 아래쪽 예비용 1번*
+    (9)세번째 아래쪽 예비용 2번*
+    (10)세번째 아래쪽 예비용 3번*
+    (11)세번째 아래쪽 예비용 4번*
+    (12)세번째 아래쪽 예비용 5번*'
+  aResult = {
+    tcode: '000',
+    tname: '샘플출발터미널',
+    bang_code: '00',
+    bang_name: '안드로메다',
+    heng_code: '01',
+    heng_name: '샘플도착터미널',
+    bustype: '1',
+    wcode: new Date().getDay() + 1,
+    content: helper.parseInformationBus(sample_source),
+    regdate: new Date().toISOString()}
+  result = [aResult]
+  callback null, result
 
 module.exports = terminal
 

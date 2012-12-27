@@ -21,18 +21,19 @@ module.exports.parseInformationBus = (source) ->
 	arrFirst = source.split '('
 	for i in [1..arrFirst.length] 		# 가장 첫번째 데이터는 시간과 무관함. 차량의 종류별 시간표들
 		continue if typeof arrFirst[i] isnt 'string'
-		parsedNumber = parseInt(arrFirst[i][0]) # '(' 으로 분할한 스트링중 첫번째 스트링은 숫자 이므로 그것으로 비교
+		parsedNumber = parseInt(arrFirst[i][0..1]) # '(' 으로 분할한 스트링중 첫번째 스트링은 숫자 이므로 그것으로 비교
 		if !(parsedNumber > currentNumber ||			# 현 배열에 추가
 		parsedNumber < 2 || parsedNumber > 5)			# 차량 종류 배열 외의 정보
 			arrInfo.push info unless isEmptyObj(info)
 			info = {}
 		currentNumber = parsedNumber
-		content = arrFirst[i].split('*')[0].substring(2)
+		contentBeforeParse = arrFirst[i].split('*')[0]
+		content = contentBeforeParse.substring(contentBeforeParse.indexOf(')')+1)
 		switch currentNumber
 			when 1
-				result.firstData = content
-			when 6, 7, 8, 9, 10
-			  result["reservedData"+(currentNumber-5)] = content
+				info.firstData = content
+			when 8,9,10,11,12,13,14,15
+			  info["reservedData"+(currentNumber-7)] = content
 			when 2
 				info.title = content
 			when 3
@@ -42,6 +43,10 @@ module.exports.parseInformationBus = (source) ->
 				info.interval = content
 			when 5
 				info.spendingTime = content
+			when 6
+				info.charge = content
+			when 7
+				info.passage = content
 	arrInfo.push info unless isEmptyObj(info)
 	if arrInfo.length > 0
 		result.info = arrInfo
@@ -67,8 +72,13 @@ parseTimeTableFromString = (source) ->
 			if isNaN(hour = parseInt(splitedTime[0]))
 				continue
 
-			if isNaN(minute = parseInt(splitedTime[1]))
-				minute = 0
+			minute = {}
+			if isNaN(minute.minute = parseInt(splitedTime[1]))
+				minute.minute = 0
+
+			minute_message_start_idx = splitedTime[1].indexOf('[')
+			if minute_message_start_idx > -1
+				minute.message = splitedTime[1].substring(minute_message_start_idx + 1, splitedTime[1].indexOf(']'))
 
 			if previousHour is hour
 			  time.minutes.push minute
