@@ -22,8 +22,8 @@ module.exports.parseInformationBus = (source) ->
 	for i in [1..arrFirst.length] 		# 가장 첫번째 데이터는 시간과 무관함. 차량의 종류별 시간표들
 		continue if typeof arrFirst[i] isnt 'string'
 		parsedNumber = parseInt(arrFirst[i][0..1]) # '(' 으로 분할한 스트링중 첫번째 스트링은 숫자 이므로 그것으로 비교
-		if !(parsedNumber > currentNumber ||			# 현 배열에 추가
-		parsedNumber < 2 || parsedNumber > 5)			# 차량 종류 배열 외의 정보
+		if !(parsedNumber > currentNumber) 			# 현 배열에 추가
+		# parsedNumber < 2 || parsedNumber > 5)			# 차량 종류 배열 외의 정보
 			arrInfo.push info unless isEmptyObj(info)
 			info = {}
 		currentNumber = parsedNumber
