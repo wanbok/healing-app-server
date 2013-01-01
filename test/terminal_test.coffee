@@ -1,3 +1,4 @@
+test_helper = require './helper'
 should = require('chai').should()
 helper = require '../models/helper'
 
@@ -12,41 +13,75 @@ describe 'TerminalHelpr', ->
 					"title": '3005번 버스는 양문을 경유하며',
 					"timetable":{
 						"am":[
-							{"hour":5,"minutes":[50]},
-							{"hour":6,"minutes":[20,50]},
-							{"hour":7,"minutes":[15,50]},
-							{"hour":8,"minutes":[5,20,45]},
-							{"hour":9,"minutes":[0,30,45]},
-							{"hour":10,"minutes":[20,45]},
-							{"hour":11,"minutes":[10,45]}],
+							{"hour":5,"minutes":[{minute:50}]},
+							{"hour":6,"minutes":[{minute:20},{minute:50}]},
+							{"hour":7,"minutes":[{minute:15},{minute:50}]},
+							{"hour":8,"minutes":[{minute:5},{minute:20},{minute:45}]},
+							{"hour":9,"minutes":[{minute:0},{minute:30},{minute:45}]},
+							{"hour":10,"minutes":[{minute:20},{minute:45}]},
+							{"hour":11,"minutes":[{minute:10},{minute:45}]}],
 						"pm":[
-							{"hour":12,"minutes":[10,45]},
-							{"hour":1,"minutes":[10,45]},
-							{"hour":2,"minutes":[10,45]},
-							{"hour":3,"minutes":[0,25,40]},
-							{"hour":4,"minutes":[5,30,45]},
-							{"hour":5,"minutes":[10,25,50]},
-							{"hour":6,"minutes":[5,20,50]},
-							{"hour":7,"minutes":[20,50]},
-							{"hour":8,"minutes":[20,40]},
-							{"hour":9,"minutes":[0]}]},
+							{"hour":12,"minutes":[{minute:10},{minute:45}]},
+							{"hour":1,"minutes":[{minute:10},{minute:45}]},
+							{"hour":2,"minutes":[{minute:10},{minute:45}]},
+							{"hour":3,"minutes":[{minute:0},{minute:25},{minute:40}]},
+							{"hour":4,"minutes":[{minute:5},{minute:30},{minute:45}]},
+							{"hour":5,"minutes":[{minute:10},{minute:25},{minute:50}]},
+							{"hour":6,"minutes":[{minute:5},{minute:20},{minute:50}]},
+							{"hour":7,"minutes":[{minute:20},{minute:50}]},
+							{"hour":8,"minutes":[{minute:20},{minute:40}]},
+							{"hour":9,"minutes":[{minute:0}]}]},
 					"spendingTime": '소요시간은 약 1시간 40분'}]}
 
-			str2 = " 대구고속 안내입니다. (2)[화, 수, 목요일]*, 차량시각은 (3) 오전 7시, 10시20분, 오후 12시50분, 3시10분, 7시*이고, (2)[금, 토, 일, 월요일]*, 차량시각은 (3) 오전 7시, 10시20분, 오후 12시50분, 3시10분, 5시40분, 7시*로, (5)요금은 25,600원이고, 소요시간은 약 4시간 10분*입니다. 감사합니다."
+			str2 = " 대구고속 안내입니다. (2)[화, 수, 목요일]*, 차량시각은 (3) 오전 7시[화, 수, 목요일], 10시20분, 오후 12시50분, 3시10분, 7시*이고, (2)[금, 토, 일, 월요일]*, 차량시각은 (3) 오전 7시[금, 토, 일, 월요일], 10시20분, 오후 12시50분, 3시10분, 5시40분, 7시*로, (5)요금은 25,600원이고, 소요시간은 약 4시간 10분*입니다. 감사합니다."
+			str2_2 = " 대구고속 안내입니다. (@)(3) 오전 7시, 10시20분, 오후 12시50분, 3시10분, 7시*이고, (2)[화, 수, 목요일]*, 차량시각은 (@)(2)[금, 토, 일, 월요일]*, 차량시각은 (3) 오전 7시, 10시20분, 오후 12시50분, 3시10분, 5시40분, 7시*로, (5)요금은 25,600원이고, 소요시간은 약 4시간 10분*입니다. 감사합니다."
 
 			rst2 = {
 				"source":str2,
 				"info":[{
+					"title":"[화, 수, 목요일]",
+					"timetable":{
+						"am":[
+							{"hour":7,"minutes":[{"minute":0, message: "화, 수, 목요일"}]},
+							{"hour":10,"minutes":[{"minute":20}]}],
+						"pm":[
+							{"hour":12,"minutes":[{"minute":50}]},
+							{"hour":3,"minutes":[{"minute":10}]},
+							{"hour":7,"minutes":[{"minute":0}]}]}}, {
 					"title":"[금, 토, 일, 월요일]",
 					"timetable":{
 						"am":[
-							{"hour":7,"minutes":[0]},
-							{"hour":10,"minutes":[20]}],
+							{"hour":7,"minutes":[{minute:0, message: "금, 토, 일, 월요일"}]},
+							{"hour":10,"minutes":[{minute:20}]}],
 						"pm":[
-							{"hour":12,"minutes":[50]},
-							{"hour":3,"minutes":[10]},
-							{"hour":5,"minutes":[40]},
-							{"hour":7,"minutes":[0]}]},
+							{"hour":12,"minutes":[{minute:50}]},
+							{"hour":3,"minutes":[{minute:10}]},
+							{"hour":5,"minutes":[{minute:40}]},
+							{"hour":7,"minutes":[{minute:0}]}]},
+					"spendingTime":"요금은 25,600원이고, 소요시간은 약 4시간 10분"}]}
+
+			rst2_2 = {
+				"source":str2_2,
+				"info":[{
+					"timetable":{
+						"am":[
+							{"hour":7,"minutes":[{"minute":0}]},
+							{"hour":10,"minutes":[{"minute":20}]}],
+						"pm":[
+							{"hour":12,"minutes":[{"minute":50}]},
+							{"hour":3,"minutes":[{"minute":10}]},
+							{"hour":7,"minutes":[{"minute":0}]}]},
+					"title":"[화, 수, 목요일]",}, {
+					"title":"[금, 토, 일, 월요일]",
+					"timetable":{
+						"am":[
+							{"hour":7,"minutes":[{minute:0}]},
+							{"hour":10,"minutes":[{minute:20}]}],
+						"pm":[
+							{"hour":12,"minutes":[{minute:50}]},
+							{"hour":3,"minutes":[{minute:10}]},
+							{"hour":5,"minutes":[{minute:40}]},
+							{"hour":7,"minutes":[{minute:0}]}]},
 					"spendingTime":"요금은 25,600원이고, 소요시간은 약 4시간 10분"}]}
 
 			str3 = "부산고속 안내입니다.차량시각은 (3) 오전 7시30분, 10시10분, 오후 12시, 2시, 4시30분, 6시30분 *이고, (5)요금은 27,400원이며, 소요시간은 약 5시간*입니다. 감사합니다."
@@ -55,13 +90,13 @@ describe 'TerminalHelpr', ->
 				"info":[{
 					"timetable":{
 						"am":[
-							{"hour":7,"minutes":[30]},
-							{"hour":10,"minutes":[10]}],
+							{"hour":7,"minutes":[{minute:30}]},
+							{"hour":10,"minutes":[{minute:10}]}],
 						"pm":[
-							{"hour":12,"minutes":[0]},
-							{"hour":2,"minutes":[0]},
-							{"hour":4,"minutes":[30]},
-							{"hour":6,"minutes":[30]}]},
+							{"hour":12,"minutes":[{minute:0}]},
+							{"hour":2,"minutes":[{minute:0}]},
+							{"hour":4,"minutes":[{minute:30}]},
+							{"hour":6,"minutes":[{minute:30}]}]},
 					"spendingTime":"요금은 27,400원이며, 소요시간은 약 5시간"}]}
 
 			console.log "str1 : " + JSON.stringify(helper.parseInformationBus(str1)) + "\r\nrst1 : " + JSON.stringify(rst1) + "\r\n"
@@ -70,4 +105,5 @@ describe 'TerminalHelpr', ->
 
 			JSON.stringify(helper.parseInformationBus(str1)).should.equal JSON.stringify(rst1)
 			JSON.stringify(helper.parseInformationBus(str2)).should.equal JSON.stringify(rst2)
+			JSON.stringify(helper.parseInformationBus(str2_2)).should.equal JSON.stringify(rst2_2)
 			JSON.stringify(helper.parseInformationBus(str3)).should.equal JSON.stringify(rst3)

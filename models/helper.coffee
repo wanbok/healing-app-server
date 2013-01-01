@@ -12,6 +12,7 @@
 # 위의 2~5가 루틴가능
 
 module.exports.parseInformationBus = (source) ->
+	isOrderedNumber = source.indexOf('(@)') < 0
 	result = {}
 	result.source = source
 	arrInfo = []
@@ -21,14 +22,19 @@ module.exports.parseInformationBus = (source) ->
 	arrFirst = source.split '('
 	for i in [1..arrFirst.length] 		# 가장 첫번째 데이터는 시간과 무관함. 차량의 종류별 시간표들
 		continue if typeof arrFirst[i] isnt 'string'
-		parsedNumber = parseInt(arrFirst[i][0..1]) # '(' 으로 분할한 스트링중 첫번째 스트링은 숫자 이므로 그것으로 비교
-		if !(parsedNumber > currentNumber) 			# 현 배열에 추가
-		# parsedNumber < 2 || parsedNumber > 5)			# 차량 종류 배열 외의 정보
+		parsedString = arrFirst[i][0..1]
+		parsedNumber = parseInt(parsedString) # '(' 으로 분할한 스트링중 첫번째 스트링은 숫자 이므로 그것으로 비교
+		if (isOrderedNumber and !(parsedNumber > currentNumber)) or
+		(!isOrderedNumber and parsedString[0] is '@')
+			# 현 배열에 추가
 			arrInfo.push info unless isEmptyObj(info)
 			info = {}
+			continue if isNaN(parsedNumber)
+
 		currentNumber = parsedNumber
 		contentBeforeParse = arrFirst[i].split('*')[0]
 		content = contentBeforeParse.substring(contentBeforeParse.indexOf(')')+1)
+		content.replace /^\s+|\s+$/g, ""
 		switch currentNumber
 			when 1
 				info.firstData = content
@@ -54,6 +60,7 @@ module.exports.parseInformationBus = (source) ->
 
 parseTimeTableFromString = (source) ->
 	return null if typeof source isnt 'string'
+	source = convertCommaToAnotherComma source		# 시간표 분 옆의 대괄호 속 콤마들을 파싱오류를 일으키게 하지 않게 바꿔둔다.
 	ampm = {}
 	arrAmpmStr = source.replace('오전', '').split '오후'
 	for str in arrAmpmStr						# 오전과 오후
@@ -78,7 +85,7 @@ parseTimeTableFromString = (source) ->
 
 			minute_message_start_idx = splitedTime[1].indexOf('[')
 			if minute_message_start_idx > -1
-				minute.message = splitedTime[1].substring(minute_message_start_idx + 1, splitedTime[1].indexOf(']'))
+				minute.message = revertCommaFromAnotherComma(splitedTime[1].substring(minute_message_start_idx + 1, splitedTime[1].indexOf(']')))
 
 			if previousHour is hour
 			  time.minutes.push minute
@@ -95,6 +102,21 @@ parseTimeTableFromString = (source) ->
 		  ampm.pm = arrTime
 	ampm = null if isEmptyObj(ampm)
 	return ampm
+
+convertCommaToAnotherComma = (source) ->
+	endIndex = 0
+	while (startIndex = source.indexOf('[', endIndex + 1)) > -1
+		if (endIndex = source.indexOf(']', startIndex + 1)) > -1
+			betweenStr = source[startIndex...endIndex].replace(/,/gi, '、')
+			source = source.substring(0, startIndex) + betweenStr + source.substring(endIndex)
+			# console.log startIndex + " " + endIndex + " " + betweenStr + " " + source
+		else
+			break
+	return source
+
+revertCommaFromAnotherComma = (source) ->
+	return source.replace(/、/g, ',')
+
 
 isEmptyObj = (obj) ->
 	return false if obj.length and obj.length > 0
