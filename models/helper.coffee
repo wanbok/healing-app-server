@@ -13,6 +13,9 @@
 
 module.exports.parseInformationBus = (source) ->
 	isOrderedNumber = source.indexOf('(@)') < 0
+	source = source.replace(/\(\?\)/g, " ") if source.indexOf('(?)') > -1
+	source = source.replace(/\(\?\?\)/g, "\r\n") if source.indexOf('(??)') > -1
+	console.log source
 	result = {}
 	result.source = source
 	arrInfo = []
