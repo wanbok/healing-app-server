@@ -3,7 +3,7 @@ helper = require './helper'
 terminal = {}
 
 terminal.search = (search, callback) => 
-  mysqlDb.query 'SELECT * FROM na2_admin WHERE tname like "%#{search}%"', (error, results, fields) =>
+  mysqlDb.query "SELECT * FROM na2_admin WHERE tname like '%#{search}%'", (error, results, fields) =>
     if(error)
       console.log("데이터베이스 조회 실패: " + error)
       callback error, null
@@ -19,7 +19,7 @@ terminal.search = (search, callback) =>
 
     callback null, results_for_return
 terminal.all = (callback) => 
-  mysqlDb.query 'SELECT * FROM na2_admin', (error, results, fields) =>
+  mysqlDb.query "SELECT * FROM na2_admin", (error, results, fields) =>
     if(error)
       console.log("데이터베이스 조회 실패: " + error)
       callback error, null
@@ -38,7 +38,7 @@ terminal.all = (callback) =>
     callback null, results_for_return
 
 terminal.arrive_region = (tcode, callback) =>
-  mysqlDb.query 'SELECT * FROM na2_bang WHERE tcode = "#{tcode}"', (error, results, fields) =>
+  mysqlDb.query "SELECT * FROM na2_bang WHERE tcode = '#{tcode}'", (error, results, fields) =>
     if(error)
       console.log("데이터베이스 조회 실패: " + error)
       callback error, null
@@ -55,7 +55,7 @@ terminal.arrive_region = (tcode, callback) =>
     callback null, results_for_return
 
 terminal.arrive_terminal = (tcode, bang_code, callback) =>
-  mysqlDb.query 'SELECT * FROM na2_heng WHERE tcode = "#{tcode}" AND bang_code = "#{bang_code}"', (error, results, fields) =>
+  mysqlDb.query "SELECT * FROM na2_heng WHERE tcode = '#{tcode}' AND bang_code = '#{bang_code}'", (error, results, fields) =>
     if(error)
       console.log("데이터베이스 조회 실패: " + error)
       callback error, null
@@ -78,7 +78,7 @@ terminal.timetable = (tcode, bang_code, heng_code, wcode, callback) =>
     wcode = new Date().getDay() + 1
     # console.log "Default day : #{wcode}, today : #{new Date()}"
 
-  select_query = 'SELECT * FROM na2_bustime WHERE tcode = "#{tcode}" AND bang_code = "#{bang_code}" AND heng_code = "#{heng_code}" AND wcode = "#{wcode}"'
+  select_query = "SELECT * FROM na2_bustime WHERE tcode = '#{tcode}' AND bang_code = '#{bang_code}' AND heng_code = '#{heng_code}' AND wcode = '#{wcode}'"
   mysqlDb.query select_query, (error, results, fields) =>
     if(error)
       console.log("데이터베이스 조회 실패: " + error)
