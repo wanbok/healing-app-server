@@ -33,8 +33,7 @@ module.exports.parseInformationBus = (source) ->
 
 		currentNumber = parsedNumber
 		contentBeforeParse = arrFirst[i].split('*')[0]
-		content = contentBeforeParse.substring(contentBeforeParse.indexOf(')')+1)
-		content.replace /^\s+|\s+$/g, ""
+		content = contentBeforeParse.substring(contentBeforeParse.indexOf(')')+1).replace /^\s+|\s+$/g, ""
 		switch currentNumber
 			when 1
 				info.firstData = content
@@ -74,6 +73,13 @@ parseTimeTableFromString = (source) ->
 			if typeof timeStr isnt 'string' or timeStr.length < 1 # 콤마(,) 전후의 빈 내용
 				continue
 
+			extractedMessageIndex = timeStr.indexOf('[')
+			hasExtractedMessage = extractedMessageIndex > -1
+			extractedMessage = String.new
+			if hasExtractedMessage
+			  extractedMessage = revertCommaFromAnotherComma(timeStr.substring(extractedMessageIndex + 1, timeStr.indexOf(']')))
+			  timeStr = timeStr.split('[')[0]
+			
 			splitedTime = timeStr.split '시'
 
 			if isNaN(hour = parseInt(splitedTime[0]))
@@ -83,9 +89,8 @@ parseTimeTableFromString = (source) ->
 			if isNaN(minute.minute = parseInt(splitedTime[1]))
 				minute.minute = 0
 
-			minute_message_start_idx = splitedTime[1].indexOf('[')
-			if minute_message_start_idx > -1
-				minute.message = revertCommaFromAnotherComma(splitedTime[1].substring(minute_message_start_idx + 1, splitedTime[1].indexOf(']')))
+			if hasExtractedMessage
+				minute.message = extractedMessage
 
 			if previousHour is hour
 			  time.minutes.push minute
