@@ -36,7 +36,7 @@ routes = (app) ->
 					{name: "야탑역 고속버스터미널", tcode: 4, latitude: 37.417345, longitude: 127.130356}])
 			
 			res.json {error: "검색결과가 없습니다."}
-			
+	
 		app.get '/:tcode', (req, res) ->
 			if req.query.heng_code? # /terminals/:tcode?heng_code=도착터미널
 				# 여기서 시간표 및 요금표 나옴

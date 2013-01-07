@@ -18,6 +18,7 @@ terminal.search = (search, callback) =>
         regdate: result['regdate']}
 
     callback null, results_for_return
+    
 terminal.all = (callback) => 
   mysqlDb.query "SELECT * FROM na2_admin", (error, results, fields) =>
     if(error)
