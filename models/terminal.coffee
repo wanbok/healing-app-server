@@ -18,6 +18,47 @@ terminal.search = (search, callback) =>
         regdate: result['regdate']}
 
     callback null, results_for_return
+
+terminal.start_region = (callback) =>
+  results_for_return = [
+    {acode: "02", region_name: "강원도"},
+    {acode: "01", region_name: "경기도"},
+    {acode: "04", region_name: "경상남도"},
+    {acode: "03", region_name: "경상북도"},
+    {acode: "15", region_name: "광주"},
+    {acode: "13", region_name: "대구"},
+    {acode: "16", region_name: "대전"},
+    {acode: "12", region_name: "부산"},
+    {acode: "10", region_name: "서울"},
+    {acode: "14", region_name: "울산"},
+    {acode: "11", region_name: "인천"},
+    {acode: "06", region_name: "전라남도"},
+    {acode: "05", region_name: "전라북도"},
+    {acode: "09", region_name: "제주도"},
+    {acode: "08", region_name: "충청남도"},
+    {acode: "07", region_name: "충청북도"}
+  ]
+
+  callback null, results_for_return
+
+terminal.start_terminal = (acode, callback) =>
+  mysqlDb.query "SELECT * FROM na2_admin WHERE acode = '#{acode}'", (error, results, fields) =>
+    if(error)
+      console.log("데이터베이스 조회 실패: " + error)
+      callback error, null
+
+    results_for_return = []
+    for result in results
+      results_for_return.push {
+        tcode: result['tcode'],
+        tname: result['tname'],
+        acode: result['acode'],
+        bang_code: result['bang_code'],
+        bang_name: result['bang_name'],
+        regdate: result['regdate']}
+
+    callback null, results_for_return
+
     
 terminal.all = (callback) => 
   mysqlDb.query "SELECT * FROM na2_admin", (error, results, fields) =>
@@ -32,6 +73,7 @@ terminal.all = (callback) =>
       results_for_return.push {
         tcode: result['tcode'],
         tname: result['tname'],
+        acode: result['acode'],
         latitude: result['gps_info1'],
         longitude: result['gps_info2'],
         regdate: result['regdate']}
