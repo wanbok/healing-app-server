@@ -10,6 +10,7 @@ global.mysqlDb = mysql.createConnection #'mysql://na2:arsna2@nadata.codns.com:66
 
 handleDisconnect = (connection) ->
   connection.on 'error', (err) ->
+    console.log ('Connection lost is raised! error code : ' + err.code)
     if (!err.fatal)
       return
 
