@@ -1,0 +1,19 @@
+- up = !user.isNew
+- f = form(user, 'user', errs)
+- u = user.followings
+form.form-horizontal(method="post", action=(up?'/users/'+user.id:'/users'))
+	fieldset
+		| !{f.text('telNumber')}
+		| !{f.text('name')}
+		| !{f.text('birth')}
+		| !{f.text('school')}
+		| !{f.text('grade')}
+		| !{f.text('class')}
+		| !{f.text('address')}
+		| !{f.text('addressForSchool')}
+		- if ((user.followings !== 'undefined') && user.followings.length > 0)
+			| !{f.checkbox('followings', user.followings, user.followings, null)}
+		.form-actions
+			button.btn.btn-primary(type='submit')= (up?"Edit":"Create") + ' user'
+			| &nbsp;
+			button.btn.btn-danger(type='reset') Cancel
