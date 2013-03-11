@@ -1,1 +1,0 @@
-# Express with Coffeescript Template
