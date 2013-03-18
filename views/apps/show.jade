@@ -1,0 +1,28 @@
+extends ../layout
+
+block content
+  .page-header
+    h1
+      | App
+      span.pull-right
+        a.btn.btn-inverse(href='/apps') Back
+        | &nbsp;
+        a.btn(href='/apps/'+app.id+'/edit') Edit
+        | &nbsp;
+        a.btn.btn-danger.apiDestroy(href='/apps/'+app.id) Destroy
+  table.table.table-bordered.table-striped
+    tbody
+      tr
+        td
+          strong Identifier
+        td= app.identifier
+      tr
+        td
+          strong Name
+        td= app.name
+      tr
+        td
+          strong Categories
+        td 
+          - for (var i = (typeof app.categories !== 'undefined') ? app.categories.length - 1 : -1; i >= 0; i--)
+            = app.categories[i]

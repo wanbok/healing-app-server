@@ -1,0 +1,17 @@
+- up = !survey.isNew
+- f = form(survey, 'survey', errs)
+
+form.form-horizontal(method="post", action=(up?'/surveys/'+survey.id:'/surveys'))
+	fieldset
+		- if (up)
+			| !{'<input type="hidden" name="_method" value="put" />'}
+		| !{f.text('identifier')}
+		| !{f.text('version')}
+		| !{f.text('userTelNumber')}
+		| !{f.text('answeredAt')}
+		- if ((survey.answers !== 'undefined') && survey.answers.length > 0)
+			| !{f.checkbox('answers', survey.answers, survey.answers, null)}
+		.form-actions
+			button.btn.btn-primary(type='submit')= (up?"Edit":"Create") + ' survey'
+			| &nbsp;
+			button.btn.btn-danger(type='reset') Cancel

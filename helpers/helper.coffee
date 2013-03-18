@@ -18,7 +18,6 @@ class Form
       ret+= '</div></div>'
       return ret
 
-
   text: (key) ->
     return @layout(key, '<input type="text" class="input-xlarge" id=' + @id(key) + ' name=' + @name(key) + ' value="' + (if @model[key] then @model[key] else '') + '"/>')
 
@@ -56,6 +55,9 @@ class Form
       opt += '<label class="radio' + inline + '"><input type="radio" name=' + @name(key) + ' value="' + vals[i] + c + '/>' + names[i] + '</label>'
 
     return @layout(key, opt)
+
+  hidden: (key, val) ->
+    return '<input type="hidden" id=' + @id(key) + ' name=' + @name(key) + ' value="' + (if @model[key] then @model[key] else '') + '"/>'
 
 module.exports = (app) ->
 	app.locals.form = (model, mName, errs) ->

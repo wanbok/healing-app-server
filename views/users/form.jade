@@ -1,8 +1,10 @@
 - up = !user.isNew
 - f = form(user, 'user', errs)
-- u = user.followings
+
 form.form-horizontal(method="post", action=(up?'/users/'+user.id:'/users'))
 	fieldset
+		- if (up)
+			| !{'<input type="hidden" name="_method" value="put" />'}
 		| !{f.text('telNumber')}
 		| !{f.text('name')}
 		| !{f.text('birth')}

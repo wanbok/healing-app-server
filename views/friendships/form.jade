@@ -1,0 +1,15 @@
+- up = !friendship.isNew
+- f = form(friendship, 'friendship', errs)
+
+form.form-horizontal(method="post", action=(up?'/friendships/'+friendship.id:'/friendships'))
+	fieldset
+		- if (up)
+			| !{'<input type="hidden" name="_method" value="put" />'}
+		| !{f.text('followerTelNumber')}
+		| !{f.text('followingTelNumber')}
+		| !{f.checkbox('isPaired', [friendship.isPaired], ['isPaired'], null)}
+		| !{f.checkbox('needAsk', [friendship.needAsk], ['needAsk'], null)}
+		.form-actions
+			button.btn.btn-primary(type='submit')= (up?"Edit":"Create") + ' friendship'
+			| &nbsp;
+			button.btn.btn-danger(type='reset') Cancel

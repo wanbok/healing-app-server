@@ -1,0 +1,15 @@
+- up = !app.isNew
+- f = form(app, 'app', errs)
+
+form.form-horizontal(method="post", action=(up?'/apps/'+app.id:'/apps'))
+	fieldset
+		- if (up)
+			| !{'<input type="hidden" name="_method" value="put" />'}
+		| !{f.text('identifier')}
+		| !{f.text('name')}
+		- if ((app.categories !== 'undefined') && app.categories.length > 0)
+			| !{f.checkbox('categories', app.categories, app.categories, null)}
+		.form-actions
+			button.btn.btn-primary(type='submit')= (up?"Edit":"Create") + ' app'
+			| &nbsp;
+			button.btn.btn-danger(type='reset') Cancel

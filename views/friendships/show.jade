@@ -1,0 +1,28 @@
+extends ../layout
+
+block content
+  .page-header
+    h1
+      | Friendship
+      span.pull-right
+        a.btn.btn-inverse(href='/friendships') Back
+        | &nbsp;
+        a.btn(href='/friendships/'+friendship.id+'/edit') Edit
+        | &nbsp;
+        a.btn.btn-danger.apiDestroy(href='/friendships/'+friendship.id) Destroy
+  table.table.table-bordered.table-striped
+    tbody
+      tr
+        td
+          strong Identifier
+        td= friendship.identifier
+      tr
+        td
+          strong Name
+        td= friendship.name
+      tr
+        td
+          strong Categories
+        td 
+          - for (var i = (typeof friendship.categories !== 'undefined') ? friendship.categories.length - 1 : -1; i >= 0; i--)
+            = friendship.categories[i]

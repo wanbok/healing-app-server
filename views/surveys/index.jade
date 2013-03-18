@@ -1,0 +1,35 @@
+extends ../layout
+
+block content
+  .page-header
+    h1
+      | Surveys
+      span.pull-right
+        a.btn.btn-primary(href='/surveys/new') New
+  table.table.table-striped
+    thead
+      tr
+        th Identifier
+        th Version
+        th UserTelNumber
+        th AnsweredAt
+        th Answers
+        th 
+        th
+        th
+    tbody
+      each survey in surveys
+        tr
+          td= survey.identifier
+          td= survey.version
+          td= survey.userTelNumber
+          td= survey.answeredAt
+          td
+            - for (var i = (typeof survey.answers !== 'undefined') ? survey.answers.length - 1 : -1; i >= 0; i--)
+              = survey.answers[i] + ', '
+          td.actions
+            a.btn.btn-mini.btn-primary(href='/surveys/'+survey.id) Show
+          td.actions
+            a.btn.btn-mini(href='/surveys/'+survey.id) Edit
+          td.actions
+            a.btn.btn-mini.btn-danger.apiDestroy(href='/surveys/'+survey.id) Destroy

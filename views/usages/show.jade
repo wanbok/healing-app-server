@@ -3,46 +3,46 @@ extends ../layout
 block content
   .page-header
     h1
-      | User
+      | Usage
       span.pull-right
-        a.btn.btn-inverse(href='/users') Back
+        a.btn.btn-inverse(href='/usages') Back
         | &nbsp;
-        a.btn(href='/users/'+user.id+'/edit') Edit
+        a.btn(href='/usages/'+usage.id+'/edit') Edit
         | &nbsp;
-        a.btn.btn-danger.apiDestroy(href='/users/'+user.id) Destroy
+        a.btn.btn-danger.apiDestroy(href='/usages/'+usage.id) Destroy
   table.table.table-bordered.table-striped
     tbody
       tr
         td
           strong Name
-        td= user.name
+        td= usage.name
       tr
         td
           strong Birthday
-        td= user.birth
+        td= usage.birth
       tr
         td
           strong School
-        td= user.school
+        td= usage.school
       tr
         td
           strong Grade
-        td= user.grade
+        td= usage.grade
       tr
         td
           strong Class
-        td= user.class
+        td= usage.class
       tr
         td
           strong Address
-        td= user.address
+        td= usage.address
       tr
         td
           strong Address for School
-        td= user.addressForSchool
+        td= usage.addressForSchool
       tr
         td
           strong Friends
         td 
-          - for (var i = (typeof user.followings !== 'undefined') ? user.followings.length - 1 : -1; i >= 0; i--)
-            = user.followings[i]
+          - for (var i = (typeof usage.followings !== 'undefined') ? usage.followings.length - 1 : -1; i >= 0; i--)
+            = usage.followings[i]

@@ -1,0 +1,18 @@
+- up = !usage.isNew
+- f = form(usage, 'usage', errs)
+
+form.form-horizontal(method="post", action=(up?'/usages/'+usage.id:'/usages'))
+	fieldset
+		- if (up)
+			| !{'<input type="hidden" name="_method" value="put" />'}
+		| !{f.text('userTelNumber')}
+		| !{f.text('appIdentifier')}
+		| !{f.text('startedAt')}
+		| !{f.text('endedAt')}
+		| !{f.text('latitude')}
+		| !{f.text('longitude')}
+		| !{f.text('host')}
+		.form-actions
+			button.btn.btn-primary(type='submit')= (up?"Edit":"Create") + ' usage'
+			| &nbsp;
+			button.btn.btn-danger(type='reset') Cancel

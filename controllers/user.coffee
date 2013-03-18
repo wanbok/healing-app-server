@@ -13,6 +13,15 @@ class UserController
   new: (req, res) ->
     res.render 'users/new', {user: new User, errs: null}
 
+  edit: (req, res) ->
+    User.findById req.params.user, (err, user) ->
+      if err
+        user = err
+        res.statusCode = 500
+      switch req.format
+        when 'json' then res.json user
+        else res.render 'users/edit', {user: user, errs: null}
+
   # Creates new user with data from `req.body.user`
   create: (req, res) ->
     user = new User req.body.user
@@ -44,7 +53,7 @@ class UserController
         res.statusCode = 500
     
   # Deletes user by id
-  delete: (req, res) ->
+  destroy: (req, res) ->
     User.findByIdAndRemove req.params.user, (err) ->
       if not err
         res.send {}

@@ -1,0 +1,25 @@
+extends ../layout
+
+block content
+  .page-header
+    h1
+      | Categories
+      span.pull-right
+        a.btn.btn-primary(href='/categories/new') New
+  table.table.table-striped
+    thead
+      tr
+        th Name
+        th 
+        th
+        th
+    tbody
+      each category in categories
+        tr
+          td= category.name
+          td.actions
+            a.btn.btn-mini.btn-primary(href='/categories/'+category.id) Show
+          td.actions
+            a.btn.btn-mini(href='/categories/'+category.id) Edit
+          td.actions
+            a.btn.btn-mini.btn-danger.apiDestroy(href='/categories/'+category.id) Destroy

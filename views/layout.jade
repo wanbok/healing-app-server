@@ -20,12 +20,27 @@ html
     .navbar.navbar-fixed-top.navbar-inverse
       .navbar-inner
         .container-fluid
-          a.btn.btn-navbar(data-toggle='collapse', data-target='nav-collapse')
+          button.btn.btn-navbar(data-toggle='collapse', data-target='nav-collapse')
             span.icon-bar
             span.icon-bar
             span.icon-bar
           a.brand(href='/') title
-          .nav-collapse
+          .nav-collapse collapse
+            ul.nav
+              li.active
+                a(href='/users') User
+              li.active
+                a(href='/apps') App
+              li.active
+                a(href='/categories') Category
+              li.active
+                a(href='/usages') Usage
+              li.active
+                a(href='/reports') Report
+              li.active
+                a(href='/surveys') Survey
+              li.active
+                a(href='/friendships') Friendship
     .container-fluid
       .row-fluid
         .span12

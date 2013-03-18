@@ -1,0 +1,31 @@
+extends ../layout
+
+block content
+  .page-header
+    h1
+      | Apps
+      span.pull-right
+        a.btn.btn-primary(href='/apps/new') New
+  table.table.table-striped
+    thead
+      tr
+        th Identifier
+        th Name
+        th Categories
+        th 
+        th
+        th
+    tbody
+      each app in apps
+        tr
+          td= app.identifier
+          td= app.name
+          td
+            - for (var i = (typeof app.categories !== 'undefined') ? app.categories.length - 1 : -1; i >= 0; i--)
+              = app.categories[i] + ', '
+          td.actions
+            a.btn.btn-mini.btn-primary(href='/apps/'+app.id) Show
+          td.actions
+            a.btn.btn-mini(href='/apps/'+app.id) Edit
+          td.actions
+            a.btn.btn-mini.btn-danger.apiDestroy(href='/apps/'+app.id) Destroy

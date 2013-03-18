@@ -1,0 +1,14 @@
+- up = !category.isNew
+- f = form(category, 'category', errs)
+
+form.form-horizontal(method="post", action=(up?'/categories/'+category.id:'/categories'))
+	fieldset
+		- if (up)
+			| !{'<input type="hidden" name="_method" value="put" />'}
+		| !{f.text('name')}
+		- if ((category.apps !== 'undefined') && category.apps.length > 0)
+			| !{f.checkbox('apps', category.apps, category.apps, null)}
+		.form-actions
+			button.btn.btn-primary(type='submit')= (up?"Edit":"Create") + ' category'
+			| &nbsp;
+			button.btn.btn-danger(type='reset') Cancel

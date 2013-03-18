@@ -1,0 +1,31 @@
+extends ../layout
+
+block content
+  .page-header
+    h1
+      | Friendships
+      span.pull-right
+        a.btn.btn-primary(href='/friendships/new') New
+  table.table.table-striped
+    thead
+      tr
+        th followerTelNumber
+        th followingTelNumber
+        th isPaired
+        th needAsk
+        th
+        th
+        th
+    tbody
+      each friendship in friendships
+        tr
+          td= friendship.followerTelNumber
+          td= friendship.followingTelNumber
+          td= friendship.isPaired
+          td= friendship.needAsk
+          td.actions
+            a.btn.btn-mini.btn-primary(href='/friendships/'+friendship.id) Show
+          td.actions
+            a.btn.btn-mini(href='/friendships/'+friendship.id) Edit
+          td.actions
+            a.btn.btn-mini.btn-danger.apiDestroy(href='/friendships/'+friendship.id) Destroy

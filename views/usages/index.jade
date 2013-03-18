@@ -1,0 +1,31 @@
+extends ../layout
+
+block content
+  .page-header
+    h1
+      | Usages
+      span.pull-right
+        a.btn.btn-primary(href='/usages/new') New
+  table.table.table-striped
+    thead
+      tr
+        th Name
+        th Birthday
+        th School
+        th Class
+        th 
+        th
+        th
+    tbody
+      each usage in usages
+        tr
+          td= usage.name
+          td= usage.birth
+          td= usage.school
+          td= usage.class
+          td.actions
+            a.btn.btn-mini.btn-primary(href='/usages/'+usage.id) Show
+          td.actions
+            a.btn.btn-mini(href='/usages/'+usage.id) Edit
+          td.actions
+            a.btn.btn-mini.btn-danger.apiDestroy(href='/usages/'+usage.id) Destroy
