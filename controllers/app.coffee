@@ -1,4 +1,5 @@
 App = require '../models/app'
+Category = require '../models/category'
 
 # App model's CRUD controller.
 class AppController 
@@ -11,7 +12,8 @@ class AppController
         else res.render 'apps/index', {apps: apps}
 
   new: (req, res) ->
-    res.render 'apps/new', {app: new App, errs: null}
+    Category.find {}, (err, categories) ->
+      res.render 'apps/new', {app: new App, errs: null, categories: categories}
 
   edit: (req, res) ->
     App.findById req.params.app, (err, app) ->
@@ -20,7 +22,7 @@ class AppController
         res.statusCode = 500
       switch req.format
         when 'json' then res.json app
-        else res.render 'apps/edit', {app: app, errs: null}
+        else res.render 'apps/edit', {app: app, errs: null, categories: Category.find()}
 
   # Creates new app with data from `req.body.app`
   create: (req, res) ->

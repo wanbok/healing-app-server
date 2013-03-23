@@ -37,3 +37,6 @@ module.exports = ->
 	# Helper
 	require('../helpers/helper')(@)
 	@use @helpers
+
+	# Routin works
+	
