@@ -14,35 +14,29 @@ block content
     tbody
       tr
         td
-          strong Name
-        td= usage.name
+          strong UserTelNumber
+        td= usage.userTelNumber
       tr
         td
-          strong Birthday
-        td= usage.birth
+          strong AppIdentifier
+        td= usage.appIdentifier
       tr
         td
-          strong School
-        td= usage.school
+          strong StartedAt
+        td= usage.startedAt
       tr
         td
-          strong Grade
-        td= usage.grade
+          strong EnddedAt
+        td= usage.enddedAt
       tr
         td
-          strong Class
-        td= usage.class
+          strong Latitude
+        td= usage.latitude
       tr
         td
-          strong Address
-        td= usage.address
+          strong Longitude
+        td= usage.longitude
       tr
         td
-          strong Address for School
-        td= usage.addressForSchool
-      tr
-        td
-          strong Friends
-        td 
-          - for (var i = (typeof usage.followings !== 'undefined') ? usage.followings.length - 1 : -1; i >= 0; i--)
-            = usage.followings[i]
+          strong Host
+        td= usage.host

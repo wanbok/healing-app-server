@@ -1,13 +1,13 @@
 mongoose = require 'mongoose'
 
 Usage = new mongoose.Schema {
-	userTelNumber: { type: String, index: true, required: true },
-	appIdentifier: { type: String, index: true, required: true },
-	startedAt: { type: Date, index: true, default: Date.now },
-	endedAt: Date,
+	userId: { type: String, index: true, required: true },
+	appPkg: { type: String, index: true, required: true },
+	startTime: { type: Date, index: true, default: Date.now },
+	duration: Number,
 	latitude: Number,
 	longitude: Number,
-	host: String
+	urlInfo: String
 }
 
 # This is not required. Because Usage is stackable data's schema

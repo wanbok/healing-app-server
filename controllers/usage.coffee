@@ -24,14 +24,26 @@ class UsageController
 
   # Creates new usage with data from `req.body.usage`
   create: (req, res) ->
-    usage = new Usage req.body.usage
-    usage.save (err, usage) ->
-      if not err
-        res.send usage
-        res.statusCode = 201
-      else
-        res.send err
-        res.statusCode = 500
+    if typeof req.body.userId is 'undefined' or req.body.userId is null
+      usage = new Usage req.body.usage
+      usage.save (err, usage) ->
+        if not err
+          res.send usage
+          res.statusCode = 201
+        else
+          res.send err
+          res.statusCode = 500  
+    else
+      for usage in req.body.usages
+        usage.userId = req.body.userId
+      Usage.collection.insert req.body.usages, (err, usages) ->
+        if not err
+          res.send usages
+          res.statusCode = 201
+        else
+          res.send err
+          res.statusCode = 500  
+    
         
   # Gets usage by id
   show: (req, res) ->
