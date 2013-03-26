@@ -9,20 +9,26 @@ block content
   table.table.table-striped
     thead
       tr
-        th UserTelNumber
-        th AppIdentifier
-        th StartedAt
-        th EndedAt
+        th UserId
+        th AppPkg
+        th StartTime
+        th Duration
+        th Latitude
+        th Longitude
+        th UrlInfo
         th 
         th
         th
     tbody
       each usage in usages
         tr
-          td= usage.userTelNumber
-          td= usage.appIdentifier
-          td= usage.startedAt
-          td= usage.endedAt
+          td= usage.userId
+          td= usage.appPkg
+          td= usage.startTime
+          td= usage.duration
+          td= usage.latitude
+          td= usage.longitude
+          td= usage.urlInfo
           td.actions
             a.btn.btn-mini.btn-primary(href='/usages/'+usage.id) Show
           td.actions
