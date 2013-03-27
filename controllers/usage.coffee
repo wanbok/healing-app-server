@@ -38,7 +38,7 @@ class UsageController
         usage.userId = req.body.userId
       Usage.collection.insert req.body.usages, (err, usages) ->
         if not err
-          res.send usages
+          res.send {usages: usages}
           res.statusCode = 201
         else
           res.send err
