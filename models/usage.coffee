@@ -3,7 +3,7 @@ mongoose = require 'mongoose'
 Usage = new mongoose.Schema {
 	userId: { type: String, index: true, required: true },
 	appPkg: { type: String, index: true, required: true },
-	startTime: { type: Date, index: true, default: Date.now },
+	startTime: { type: Date, index: true },
 	duration: Number,
 	latitude: Number,
 	longitude: Number,
@@ -11,6 +11,6 @@ Usage = new mongoose.Schema {
 }
 
 # This is not required. Because Usage is stackable data's schema
-# Usage.index {userTelNumber: 1, appIdentifier: 1, startedAt: 1}, {unique: true}
+# Usage.index {userId: 1, appPkg: 1, startTime: 1}, {unique: true}
 
 module.exports = mongoose.model 'Usage', Usage
