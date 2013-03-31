@@ -1,7 +1,7 @@
 mongoose = require 'mongoose'
 
 App = new mongoose.Schema {
-	identifier: { type: String, index: { unique: true }, required: true },
+	pkg: { type: String, index: { unique: true }, required: true },
 	name: { type: String, required: true },
 	categories: Array
 }

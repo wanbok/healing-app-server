@@ -42,7 +42,7 @@ class UsageController
           res.statusCode = 201
         else
           res.send err
-          res.statusCode = 500  
+          res.statusCode = 500
     
         
   # Gets usage by id
