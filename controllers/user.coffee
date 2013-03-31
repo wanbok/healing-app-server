@@ -14,7 +14,7 @@ class UserController
     res.render 'users/new', {user: new User, errs: null}
 
   edit: (req, res) ->
-    User.findById req.params.user, (err, user) ->
+    User.findOne {userId: req.params.user}, (err, user) ->
       if err
         user = err
         res.statusCode = 500
@@ -35,7 +35,7 @@ class UserController
         
   # Gets user by id
   show: (req, res) ->
-    User.findById req.params.user, (err, user) ->
+    User.findOne {userId: req.params.user}, (err, user) ->
       if err
         user = err
         res.statusCode = 500
@@ -45,16 +45,21 @@ class UserController
 
   # Updates user with data from `req.body.user`
   update: (req, res) ->
-    User.findByIdAndUpdate req.params.user, {"$set":req.body.user}, (err, user) ->
+    console.log 'Update user'
+    User.findOneAndUpdate {userId: req.params.user}, {"$set": req.body.user}, {upsert: true}, (err, user) ->
       if not err
+        console.log 'Succeed updating user'
+        console.log user
         res.send user
+        res.statusCode = 200
       else
+        console.log 'Failed updating user'
         res.send err
         res.statusCode = 500
     
   # Deletes user by id
   destroy: (req, res) ->
-    User.findByIdAndRemove req.params.user, (err) ->
+    User.findOneAndRemove {userId: req.params.user}, (err) ->
       if not err
         res.send {}
       else
