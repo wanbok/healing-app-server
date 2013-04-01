@@ -8,6 +8,6 @@ Survey = new mongoose.Schema {
 	answers: String
 }
 
-Survey.index {identifier: 1, version: 1, userTelNumber: 1}, {unique: true}
+Survey.index {surveyId: 1, version: 1, userId: 1}, {unique: true}
 
 module.exports = mongoose.model 'Survey', Survey
