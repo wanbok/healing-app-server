@@ -24,10 +24,7 @@ class SurveyController
 
   # Creates new survey with data from `req.body.survey`
   create: (req, res) ->
-    for key, value of req.body
-      console.log key + ": " + value
     if typeof req.body.userId is 'undefined' or req.body.userId is null
-      console.log req.body.userId
       survey = new Survey req.body.survey
       survey.save (err, survey) ->
         if not err
@@ -37,9 +34,7 @@ class SurveyController
           res.send err
           res.statusCode = 500
     else
-      console.log 'create surveys'
       for survey in req.body.surveyResults
-        console.log survey
         survey.userId = req.body.userId
       Survey.collection.insert req.body.surveyResults, (err, surveys) ->
         if not err

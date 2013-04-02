@@ -9,3 +9,4 @@ module.exports = ->
 	@resource 'reports', require('./controllers/report')
 	@resource 'surveys', require('./controllers/survey')
 	@resource 'friendships', require('./controllers/friendship')
+	@resource 'installs', require('./controllers/installs')
