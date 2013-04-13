@@ -25,6 +25,7 @@ class InstallController
   # Creates new install with data from `req.body.install`
   create: (req, res) ->
     if typeof req.body.installs isnt 'undefined' and Object.prototype.toString.call(req.body.installs) is '[object Array]'
+      addingUserToInstalls(req.params.user, req.body.installs)
       Install.collection.insert req.body.installs, (err, installs) ->
         if not err
           res.statusCode = 201
@@ -33,6 +34,7 @@ class InstallController
           res.statusCode = 500
           res.send err
     else
+      req.body.install.userId = req.params.user
       install = new Install req.body.install
       install.save (err, install) ->
         if not err
@@ -106,6 +108,10 @@ class InstallController
         res.send err
 
 module.exports = new InstallController
+
+addingUserToInstalls = (user, installs) ->
+  for install in installs
+    install.userId = user
 
 mapForForbiddenStartTime = (forbidden) ->
   return forbidden.startTime
