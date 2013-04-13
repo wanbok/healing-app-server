@@ -4,6 +4,8 @@ express = require 'express'
 assets = require 'connect-assets'
 mongoose = require 'mongoose'
 
+global.DB_NAME = 'healing'
+
 module.exports = ->
 	baseDir = @set 'baseDir'
 
@@ -17,7 +19,7 @@ module.exports = ->
 	# DB Setting.
 	# db_config = "mongodb://#{config.DB_USER}:#{config.DB_PASS}@#{config.DB_HOST}:#{config.DB_PORT}/#{config.DB_NAME}"
 	# mongoose.connect db_config
-	mongoose.connect 'mongodb://localhost/healing'
+	mongoose.connect 'mongodb://localhost/' + DB_NAME
 
 	# Add Connect Assets.
 	@use assets()

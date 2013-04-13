@@ -1,5 +1,5 @@
 mongoose = require 'mongoose'
-Forbidden = require 'forbidden'
+Forbidden = require './forbidden'
 
 Install = new mongoose.Schema {
 	userId: { type: String, required: true },
