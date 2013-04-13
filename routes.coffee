@@ -12,4 +12,3 @@ module.exports = ->
 	installs = @resource 'installs', require('./controllers/install')
 
 	users.add installs
-	@resource 'installs', require('./controllers/install')
