@@ -1,4 +1,5 @@
 Install = require '../models/install'
+Forbidden = require '../models/forbidden'
 
 # Install model's CRUD controller.
 class InstallController 
@@ -11,10 +12,12 @@ class InstallController
         else res.render 'installs/index', {installs: installs}
 
   new: (req, res) ->
-    res.render 'installs/new', {install: new Install, errs: null}
+    install = new Install
+    install.userId = req.params.user
+    res.render 'installs/new', {install: install, errs: null}
 
   edit: (req, res) ->
-    Install.findById req.params.install, (err, install) ->
+    Install.findOne {userId: req.params.user, appPkg: req.params.install}, (err, install) ->
       if err
         res.statusCode = 500
         install = err
@@ -46,6 +49,7 @@ class InstallController
         
   # Gets install by id
   show: (req, res) ->
+    correctFormatToHtml req, res, 'install'
     Install.findOne {userId: req.params.user, appPkg: req.params.install}, (err, install) ->
       if err
         install = err
@@ -98,7 +102,7 @@ class InstallController
     
   # Deletes install by id
   destroy: (req, res) ->
-    req.params.install += "." + req.format if req.format isnt 'json' and typeof req.format isnt 'undefined'
+    correctFormatToHtml req, res, 'install'
     Install.findOneAndRemove {userId: req.params.user, appPkg: req.params.install} ,(err) ->
       if not err
         res.statusCode = 200
@@ -108,6 +112,12 @@ class InstallController
         res.send err
 
 module.exports = new InstallController
+
+correctFormatToHtml = (req, res, param) ->
+  if req.format isnt 'html' and req.format isnt 'json' and typeof req.format isnt 'undefined'
+    req.params[param] += "." + req.format
+    req.format = undefined
+    res.type 'html'
 
 addingUserToInstalls = (user, installs) ->
   for install in installs

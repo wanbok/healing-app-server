@@ -24,8 +24,8 @@ block content
           td= user.school
           td= user.class
           td.actions
-            a.btn.btn-mini.btn-primary(href='/users/'+user.id) Show
+            a.btn.btn-mini.btn-primary(href='/users/'+user.userId) Show
           td.actions
-            a.btn.btn-mini(href='/users/'+user.id) Edit
+            a.btn.btn-mini(href='/users/'+user.userId) Edit
           td.actions
-            a.btn.btn-mini.btn-danger.apiDestroy(href='/users/'+user.id) Destroy
+            a.btn.btn-mini.btn-danger.apiDestroy(href='/users/'+user.userId) Destroy

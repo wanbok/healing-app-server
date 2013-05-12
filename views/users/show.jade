@@ -5,11 +5,13 @@ block content
     h1
       | User
       span.pull-right
+        a.btn.btn-primary(href='/users/'+user.userId+'/installs') Installed Apps
+        | &nbsp;
         a.btn.btn-inverse(href='/users') Back
         | &nbsp;
-        a.btn(href='/users/'+user.id+'/edit') Edit
+        a.btn(href='/users/'+user.userId+'/edit') Edit
         | &nbsp;
-        a.btn.btn-danger.apiDestroy(href='/users/'+user.id) Destroy
+        a.btn.btn-danger.apiDestroy(href='/users/'+user.userId) Destroy
   table.table.table-bordered.table-striped
     tbody
       tr

@@ -1,0 +1,9 @@
+extends ../layout
+
+block content
+  .page-header
+    h1
+      | Edit Install
+      span.pull-right
+        a.btn.btn-inverse(href='/users/'+install.userId+'/installs/'+install.appPkg) Back
+  include form

@@ -1,0 +1,27 @@
+extends ../layout
+
+block content
+  .page-header
+    h1
+      | Installs
+      span.pull-right
+        a.btn.btn-primary(href='/users/'+installs[0].userId+'/installs/new') New
+  table.table.table-striped
+    thead
+      tr
+        th AppPkg
+        th UserId
+        th 
+        th
+        th
+    tbody
+      each install in installs
+        tr
+          td= install.appPkg
+          td= install.userId
+          td.actions
+            a.btn.btn-mini.btn-primary(href='/users/'+install.userId+'/installs/'+install.appPkg) Show
+          td.actions
+            a.btn.btn-mini(href='/users/'+install.userId+'/installs/'+install.appPkg+'/edit') Edit
+          td.actions
+            a.btn.btn-mini.btn-danger.apiDestroy(href='/users/'+install.userId+'/installs/'+install.appPkg) Destroy

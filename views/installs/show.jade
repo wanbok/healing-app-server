@@ -1,0 +1,28 @@
+extends ../layout
+
+block content
+  .page-header
+    h1
+      | Install
+      span.pull-right
+        a.btn.btn-inverse(href='/users/'+install.userId+'/installs/'+install.appPkg) Back
+        | &nbsp;
+        a.btn(href='/users/'+install.userId+'/installs/'+install.appPkg+'/edit') Edit
+        | &nbsp;
+        a.btn.btn-danger.apiDestroy(href='/users/'+install.userId+'/installs/'+install.appPkg) Destroy
+  table.table.table-bordered.table-striped
+    tbody
+      tr
+        td
+          strong AppPkg
+        td= install.appPkg
+      tr
+        td
+          strong UserId
+        td= install.userId
+      tr
+        td
+          strong Forbiddens
+        td 
+          - for (var i = (typeof install.forbiddens !== 'undefined') ? install.forbiddens.length - 1 : -1; i >= 0; i--)
+            = install.forbiddens[i]

@@ -9,15 +9,30 @@ class Form
     @name = (key) ->
       return '"' + @mName + '[' + key + ']"'
 
-    @layout = (key, inp) ->
+    @layout_header = (key) ->
       ret = ''
       ret+= '<div class="control-group' + (if @errs[key] then ' error' else '') + '">'
       ret+= '<label class="control-label" for=' + @id(key) + '>'
-      ret+= utile.inflect.titleize(key) + '</label><div class="controls">'
-      ret+= inp + (if @errs[key] then '<span class="help-inline">' + @errs[key] + '</span>' else '')
+      ret+= utile.inflect.titleize(key) + '</label><div id=' + @id(key) + ' class="controls">'
+      return ret
+
+    @layout_footer = (key) ->
+      ret = (if @errs[key] then '<span class="help-inline">' + @errs[key] + '</span>' else '')
       ret+= '</div></div>'
       return ret
 
+    @layout = (key, inp) ->
+      ret = @layout_header(key)
+      ret+= inp
+      ret+= @layout_footer(key)
+      return ret
+
+  layout_header: (key) ->
+    return @layout_header(key)
+
+  layout_footer: (key) ->
+    return @layout_footer(key)
+    
   text: (key) ->
     return @layout(key, '<input type="text" class="input-xlarge" id=' + @id(key) + ' name=' + @name(key) + ' value="' + (if @model[key] then @model[key] else '') + '"/>')
 
