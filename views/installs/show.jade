@@ -2,6 +2,11 @@ extends ../layout
 
 block content
   .page-header
+    link(rel='stylesheet', href='/stylesheets/ui-lightness/jquery-ui-1.10.3.custom.css')
+    link(rel='stylesheet', href='/stylesheets/forbiddens.css')
+
+    script(type='text/javascript', src='/javascripts/jquery-ui-1.10.3.custom.min.js')
+    script(type='text/javascript', src='/javascripts/forbiddens.js')
     h1
       | Install
       span.pull-right
@@ -10,7 +15,7 @@ block content
         a.btn(href='/users/'+install.userId+'/installs/'+install.appPkg+'/edit') Edit
         | &nbsp;
         a.btn.btn-danger.apiDestroy(href='/users/'+install.userId+'/installs/'+install.appPkg) Destroy
-  table.table.table-bordered.table-striped
+  table#show.table.table-bordered.table-striped
     tbody
       tr
         td
@@ -23,6 +28,17 @@ block content
       tr
         td
           strong Forbiddens
-        td 
-          - for (var i = (typeof install.forbiddens !== 'undefined') ? install.forbiddens.length - 1 : -1; i >= 0; i--)
-            = install.forbiddens[i]
+        td
+          - days = ["&nbsp;", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+          - for (var k = 0; k < days.length; k++)
+            span(class='selectable_title')= days[k]
+          ul(class='selectable inline')
+            - for (var i = 0; i < 24; i++)
+              li(class='forbidden_label') #{i}시
+          - for (var k = 1; k < days.length; k++)
+            ul(id='selectable#{k}', class='selectable inline')
+              - for (var i = 0; i < 144; i++)
+                li(class='ui-widget-content')
+          script(type='text/javascript')
+            var forbiddens = !{JSON.stringify(install.forbiddens)}
+            makeSelectedByData(forbiddens);

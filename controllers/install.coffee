@@ -62,43 +62,20 @@ class InstallController
   update: (req, res) ->
     req.params.install += "." + req.format if req.format isnt 'json' and typeof req.format isnt 'undefined'
     console.log 'Actions is ' + req.body.action
+    install = null
     if req.body.action is 'add'
       Install.findOneAndUpdate {userId: req.params.user, appPkg: req.params.install}, {"$pushAll": {forbiddens:req.body.install.forbiddens}}, (err, install) ->
-        if not err
-          console.log 'Succeed updating install'
-          console.log install
-          res.statusCode = 200
-          res.json install
-        else
-          console.log 'Failed updating install'
-          res.statusCode = 500
-          res.json err
+        responseResult(req, res, err, install)
     else if req.body.action is 'remove'
       startTimes = if typeof req.body.install.forbiddenStartTimes isnt 'undefined'
       then req.body.install.forbiddenStartTimes
       else req.body.install.forbiddens.map(mapForForbiddenStartTime)
       console.log "startTimes: "+startTimes
       Install.findOneAndUpdate {userId: req.params.user, appPkg: req.params.install}, {"$pull": {forbiddens:{startTime:{"$in":startTimes}}}}, (err, install) ->
-        if not err
-          console.log 'Succeed updating install'
-          console.log install
-          res.statusCode = 200
-          res.json install
-        else
-          console.log 'Failed updating install'
-          res.statusCode = 500
-          res.json err
+        responseResult(req, res, err, install)
     else
       Install.findOneAndUpdate {userId: req.params.user, appPkg: req.params.install}, {"$set": req.body.install}, {upsert: true}, (err, install) ->
-        if not err
-          console.log 'Succeed updating install'
-          console.log install
-          res.statusCode = 200
-          res.json install
-        else
-          console.log 'Failed updating install'
-          res.statusCode = 500
-          res.json err
+        responseResult(req, res, err, install)
     
   # Deletes install by id
   destroy: (req, res) ->
@@ -112,6 +89,22 @@ class InstallController
         res.send err
 
 module.exports = new InstallController
+
+responseResult = (req, res, err, install) ->
+  console.log 'format is ' + req.format
+  if not err
+    console.log 'Succeed updating install'
+    console.log install
+    res.statusCode = 200
+  else
+    console.log 'Failed updating install'
+    res.statusCode = 500
+    install = err
+  switch req.format
+    when 'json' then res.json install
+    else
+      res.type 'html'
+      res.render 'installs/show', {install: install}
 
 correctFormatToHtml = (req, res, param) ->
   if req.format isnt 'html' and req.format isnt 'json' and typeof req.format isnt 'undefined'

@@ -8,7 +8,7 @@ link(rel='stylesheet', href='/stylesheets/forbiddens.css')
 script(type='text/javascript', src='/javascripts/jquery-ui-1.10.3.custom.min.js')
 script(type='text/javascript', src='/javascripts/forbiddens.js')
 
-form.form-horizontal(method="post", action=(up?'/users/'+install.userId+'/installs/'+install.appPkg:'/users/'+install.userId+'/installs'))
+form#install.form-horizontal(method="post", action=(up?'/users/'+install.userId+'/installs/'+install.appPkg:'/users/'+install.userId+'/installs'))
 	fieldset
 		- if (up)
 			| !{'<input type="hidden" name="_method" value="put" />'}
@@ -25,9 +25,7 @@ form.form-horizontal(method="post", action=(up?'/users/'+install.userId+'/instal
 				- for (var i = 0; i < 144; i++)
 					li(class='ui-widget-content')
 		| !{f.layout_footer('forbiddens')}
-		| !{'<input type="hidden" name="install[forbiddens][0][startTime]" value="" />'}
-		| !{'<input type="hidden" name="install[forbiddens][0][duration]" value="" />'}
-
+		div#forbidden
 		.form-actions
 			button.btn.btn-primary(type='submit')= (up?"Edit":"Create") + ' install'
 			| &nbsp;
