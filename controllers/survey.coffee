@@ -7,7 +7,7 @@ class SurveyController
   index: (req, res) ->
     Survey.find {}, (err, surveys) ->
       switch req.format
-        when 'json' then res.json surveyss
+        when 'json' then res.json surveys
         else res.render 'surveys/index', {surveys: surveys}
 
   new: (req, res) ->

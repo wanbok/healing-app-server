@@ -12,7 +12,7 @@ block content
         th SurveyId
         th Version
         th UserId
-        th AnsweredAt
+        th AnswerTime
         th Answers
         th 
         th
@@ -23,7 +23,7 @@ block content
           td= survey.surveyId
           td= survey.version
           td= survey.userId
-          td= survey.answeredAt
+          td= survey.answerTime
           td= survey.answers
           td.actions
             a.btn.btn-mini.btn-primary(href='/surveys/'+survey.id) Show
