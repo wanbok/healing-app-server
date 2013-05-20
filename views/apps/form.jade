@@ -7,7 +7,7 @@ form.form-horizontal(method="post", action=(up?'/apps/'+app.id:'/apps'))
 	fieldset
 		- if (up)
 			| !{'<input type="hidden" name="_method" value="put" />'}
-		| !{f.text('identifier')}
+		| !{f.text('pkg')}
 		| !{f.text('name')}
 		- for (i = categories.length - 1; i >= 0; i--)
 			- names.push(categories[i].name)

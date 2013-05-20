@@ -9,7 +9,7 @@ block content
   table.table.table-striped
     thead
       tr
-        th Identifier
+        th Pkg
         th Name
         th Categories
         th 
@@ -18,7 +18,7 @@ block content
     tbody
       each app in apps
         tr
-          td= app.identifier
+          td= app.pkg
           td= app.name
           td
             - for (var i = (typeof app.categories !== 'undefined') ? app.categories.length - 1 : -1; i >= 0; i--)
