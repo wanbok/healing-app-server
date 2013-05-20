@@ -9,7 +9,7 @@ block content
   table.table.table-striped
     thead
       tr
-        th Identifier
+        th SurveyId
         th Version
         th UserId
         th AnsweredAt
@@ -20,7 +20,7 @@ block content
     tbody
       each survey in surveys
         tr
-          td= survey.identifier
+          td= survey.surveyId
           td= survey.version
           td= survey.userId
           td= survey.answeredAt

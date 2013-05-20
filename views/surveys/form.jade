@@ -5,7 +5,7 @@ form.form-horizontal(method="post", action=(up?'/surveys/'+survey.id:'/surveys')
 	fieldset
 		- if (up)
 			| !{'<input type="hidden" name="_method" value="put" />'}
-		| !{f.text('identifier')}
+		| !{f.text('surveyId')}
 		| !{f.text('version')}
 		| !{f.text('userId')}
 		| !{f.text('answeredAt')}
