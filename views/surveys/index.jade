@@ -11,7 +11,7 @@ block content
       tr
         th Identifier
         th Version
-        th UserTelNumber
+        th UserId
         th AnsweredAt
         th Answers
         th 
@@ -22,11 +22,9 @@ block content
         tr
           td= survey.identifier
           td= survey.version
-          td= survey.userTelNumber
+          td= survey.userId
           td= survey.answeredAt
-          td
-            - for (var i = (typeof survey.answers !== 'undefined') ? survey.answers.length - 1 : -1; i >= 0; i--)
-              = survey.answers[i] + ', '
+          td= survey.answers
           td.actions
             a.btn.btn-mini.btn-primary(href='/surveys/'+survey.id) Show
           td.actions

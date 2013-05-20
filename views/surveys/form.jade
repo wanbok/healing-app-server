@@ -7,10 +7,9 @@ form.form-horizontal(method="post", action=(up?'/surveys/'+survey.id:'/surveys')
 			| !{'<input type="hidden" name="_method" value="put" />'}
 		| !{f.text('identifier')}
 		| !{f.text('version')}
-		| !{f.text('userTelNumber')}
+		| !{f.text('userId')}
 		| !{f.text('answeredAt')}
-		- if ((survey.answers !== 'undefined') && survey.answers.length > 0)
-			| !{f.checkbox('answers', survey.answers, survey.answers, null)}
+		| !{f.text('answers')}
 		.form-actions
 			button.btn.btn-primary(type='submit')= (up?"Edit":"Create") + ' survey'
 			| &nbsp;
