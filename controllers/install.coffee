@@ -9,7 +9,7 @@ class InstallController
     Install.find {}, (err, installs) ->
       switch req.format
         when 'json' then res.json installs
-        else res.render 'installs/index', {installs: installs}
+        else res.render 'installs/index', {installs: installs, currentUser: req.params.user}
 
   new: (req, res) ->
     install = new Install
