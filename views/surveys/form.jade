@@ -8,7 +8,7 @@ form.form-horizontal(method="post", action=(up?'/surveys/'+survey.id:'/surveys')
 		| !{f.text('surveyId')}
 		| !{f.text('version')}
 		| !{f.text('userId')}
-		| !{f.text('answeredAt')}
+		//- | !{f.text('answeredAt')}
 		| !{f.text('answers')}
 		.form-actions
 			button.btn.btn-primary(type='submit')= (up?"Edit":"Create") + ' survey'
