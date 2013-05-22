@@ -11,9 +11,5 @@ class HomeController
 	home: (request, response) ->
 		response.render "index",
 			title: 'Welcome!'
-			thing: 'World'
 
-
-controller = new HomeController
-
-module.exports = controller
+module.exports = new HomeController

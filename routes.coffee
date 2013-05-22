@@ -3,6 +3,8 @@ module.exports = ->
 	# 'Static page' routes
 	@get '/', require('./controllers/home').home
 
+	@get '/gcm', require('./controllers/gcm').test
+
 	@resource 'apps', require('./controllers/app')
 	@resource 'categories', require('./controllers/category')
 	@resource 'usages', require('./controllers/usage')
