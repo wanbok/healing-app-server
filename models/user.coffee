@@ -9,7 +9,8 @@ User = new mongoose.Schema {
 	class: String,
 	address: String,
 	addressForSchool: String,
-	followings: Array
+	followings: Array,
+	gcmRegId: String
 }
 
 module.exports = mongoose.model 'User', User
