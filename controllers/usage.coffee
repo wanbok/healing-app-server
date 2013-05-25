@@ -36,6 +36,7 @@ class UsageController
     else
       for usage in req.body.usages
         usage.userId = req.body.userId
+        usage.startTime = new Date(usage.startTime)
       Usage.collection.insert req.body.usages, (err, usages) ->
         if not err
           res.send {usages: usages}
