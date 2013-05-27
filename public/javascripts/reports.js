@@ -7,7 +7,6 @@ function reports(reports) {
 			layers = stack(reports.map(function(d) { return calculateLayer(d); }));
 	var yGroupMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y; }); }),
 			yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
-	console.log("gm : "+yGroupMax+", sm : "+yStackMax);
 	var margin = {top: 40, right: 10, bottom: 20, left: 10},
 			inset = {right: 150},
 			width = 960 - margin.left - margin.right,
