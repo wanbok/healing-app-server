@@ -6,12 +6,9 @@ class ReportController
 
   # Lists all reports
   report: (req, res) ->
-    # Usage.find {}, (err, docs) ->
-    #   if err
-    #     res.json err
-    #   else
-    #     res.json docs
-    UsageService.usagesByParams req.query, (err, results) ->
-      res.json results
+    UsageService.usagesByParams req.query, (err, reports) ->
+      switch req.format
+        when 'json' then res.json reports
+        else res.render 'reports/d3', {reports: reports, err: err}
 
 module.exports = new ReportController
