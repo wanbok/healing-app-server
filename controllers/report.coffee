@@ -5,7 +5,7 @@ Usage = require '../models/usage'
 class ReportController 
 
   # Lists all reports
-  report: (req, res) ->
+  index: (req, res) ->
     UsageService.usagesByParams req.query, (err, reports) ->
       switch req.format
         when 'json' then res.json reports

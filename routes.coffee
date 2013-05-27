@@ -3,7 +3,6 @@ module.exports = ->
 	# 'Static page' routes
 	@get '/', require('./controllers/home').home
 	@get '/gcm', require('./controllers/gcm').test
-	@get '/reports', require('./controllers/report').report
 
 	# RESTful
 	@resource 'apps', require('./controllers/app')
@@ -11,6 +10,7 @@ module.exports = ->
 	@resource 'usages', require('./controllers/usage')
 	@resource 'surveys', require('./controllers/survey')
 	@resource 'friendships', require('./controllers/friendship')
+	@resource 'reports', require('./controllers/report')
 
 	# Nested by User
 	users = @resource 'users', require('./controllers/user')
