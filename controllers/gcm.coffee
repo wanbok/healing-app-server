@@ -7,7 +7,7 @@ class GCMController
 		if typeof req.query.registration_id isnt 'undefined'
 			message =
 				registration_id: req.query.registration_id,
-				collapseKey: 'test key',
+				collapse_key: 'test key',
 				time_to_live: 3,
 				delay_while_idle: true,
 				msg: 'Success to test GCM!',
