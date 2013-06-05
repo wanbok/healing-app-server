@@ -8,11 +8,11 @@ block content
         a.btn.btn-primary(href='/usages/new') New
     span
       - if (from >= length)
-        a.btn.btn-link(href="/usages?from=#{from-length}&length=#{length-length}") Prev
+        a.btn.btn-link(href="/usages?from=#{from-length}&length=#{length}") Prev
       - else
         a.btn.btn-link.disabled Prev
       - if (usages.length === length)
-        a.btn.btn-link(href="/usages?from=#{from+length}&length=#{length+length}") Next
+        a.btn.btn-link(href="/usages?from=#{from+length}&length=#{length}") Next
       - else
         a.btn.btn-link.disabled Next
   table.table.table-striped
