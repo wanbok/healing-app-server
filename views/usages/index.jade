@@ -6,6 +6,15 @@ block content
       | Usages
       span.pull-right
         a.btn.btn-primary(href='/usages/new') New
+    span
+      - if (from >= 100)
+        a.btn.btn-link(href="/usages?from=#{from-100}&to=#{to-100}") Prev
+      - else
+        a.btn.btn-link.disabled Prev
+      - if (usages.length === 100)
+        a.btn.btn-link(href="/usages?from=#{from+100}&to=#{to+100}") Next
+      - else
+        a.btn.btn-link.disabled Next
   table.table.table-striped
     thead
       tr
