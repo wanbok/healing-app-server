@@ -7,12 +7,12 @@ block content
       span.pull-right
         a.btn.btn-primary(href='/usages/new') New
     span
-      - if (from >= 100)
-        a.btn.btn-link(href="/usages?from=#{from-100}&to=#{to-100}") Prev
+      - if (from >= length)
+        a.btn.btn-link(href="/usages?from=#{from-length}&length=#{length-length}") Prev
       - else
         a.btn.btn-link.disabled Prev
-      - if (usages.length === 100)
-        a.btn.btn-link(href="/usages?from=#{from+100}&to=#{to+100}") Next
+      - if (usages.length === length)
+        a.btn.btn-link(href="/usages?from=#{from+length}&length=#{length+length}") Next
       - else
         a.btn.btn-link.disabled Next
   table.table.table-striped
