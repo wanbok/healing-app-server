@@ -6,13 +6,13 @@ class UsageController
   # Lists all usages
   index: (req, res) ->
     from = req.query.from || 0
-    to = req.query.to || 100
-    Usage.find {}, null, {sort: {startTime: -1}, skip: from, limit: to}, (err, usages) ->
+    length = req.query.length || 100
+    Usage.find {}, null, {sort: {startTime: -1}, skip: from, limit: length}, (err, usages) ->
       if err
         res.send err
       switch req.format
         when 'json' then res.json usages
-        else res.render 'usages/index', {usages: usages, from: Number(from), to: Number(to)}
+        else res.render 'usages/index', {usages: usages, from: Number(from), length: Number(length)}
 
   new: (req, res) ->
     res.render 'usages/new', {usage: new Usage, errs: null}
