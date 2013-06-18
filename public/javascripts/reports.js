@@ -8,8 +8,9 @@ function reports(reports) {
 	var xMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.x; }); });
 	var margin = {top: 40, right: 10, bottom: 20, left: 10},
 			inset = {right: 150},
+			barHeight = 25,
 			width = 960 - margin.left - margin.right,
-			height = 500 - margin.top - margin.bottom;
+			height = (barHeight * n);
 
 	var x = d3.scale.linear()
 			.domain([0, xMax])
@@ -38,16 +39,16 @@ function reports(reports) {
 			.data(function(d) { return d; })
 		.enter().append("rect")
 			.attr("x", 0)
-			.attr("y", function(d, i, j) { return (y.rangeBand() / n) * j })
+			.attr("y", function(d, i, j) { return barHeight * j })
 			.attr("width", function(d) { return x(d.x); })
-			.attr("height", y.rangeBand() / n );
+			.attr("height", barHeight );
 
 	var text = layer.selectAll("text")
 			.data(function(d) { return d; })
 		.enter().append("text")
 			.style("text-anchor", "front")
 			.style("fill", "#000")
-			.attr("transform", function(d, i, j) { barHeight = y.rangeBand() / n; return "translate(10," + (barHeight * j + barHeight / 2) + ")" })
+			.attr("transform", function(d, i, j) { return "translate(10," + (barHeight * j + barHeight / 2) + ")" })
 			.attr("class", "title")
 			.text(function(d) { return d.title; });
 
