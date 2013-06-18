@@ -5,30 +5,22 @@ function reports(reports) {
 			m = 1,
 			stack = d3.layout.stack(),
 			layers = stack(reports.map(function(d) { return calculateLayer(d); }));
-	var yGroupMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y; }); }),
-			yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
+	var xMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.x; }); });
 	var margin = {top: 40, right: 10, bottom: 20, left: 10},
 			inset = {right: 150},
 			width = 960 - margin.left - margin.right,
 			height = 500 - margin.top - margin.bottom;
 
-	var x = d3.scale.ordinal()
+	var x = d3.scale.linear()
+			.domain([0, xMax])
+			.range([0, width - inset.right]);
+
+	var y = d3.scale.ordinal()
 			.domain([reports[0].value.userId])
-			.rangeRoundBands([0, width - inset.right], .08);
+			.rangeRoundBands([0, height], .08);
 
-	var y = d3.scale.linear()
-			.domain([0, yStackMax])
-			.range([height, 0]);
+	var color = d3.scale.category20();
 
-	var color = d3.scale.linear()
-			.domain([0, n - 1])
-			.range(["#aad", "#556"]);
-
-	var xAxis = d3.svg.axis()
-			.scale(x)
-			.tickSize(0)
-			.tickPadding(6)
-			.orient("bottom");
 
 	var svg = d3.select("div.span12").append("svg")
 			.attr("width", width + margin.left + margin.right)
@@ -45,78 +37,27 @@ function reports(reports) {
 	var rect = layer.selectAll("rect")
 			.data(function(d) { return d; })
 		.enter().append("rect")
-			.attr("x", function(d) { return x(d.x); })
-			.attr("y", height)
-			.attr("width", x.rangeBand())
-			.attr("height", 0);
+			.attr("x", 0)
+			.attr("y", function(d, i, j) { return (y.rangeBand() / n) * j })
+			.attr("width", function(d) { return x(d.x); })
+			.attr("height", y.rangeBand() / n );
 
-	rect.transition()
-			.delay(function(d, i) { return i * 10; })
-			.attr("y", function(d) { return y(d.y0 + d.y); })
-			.attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); });
+	var text = layer.selectAll("text")
+			.data(function(d) { return d; })
+		.enter().append("text")
+			.style("text-anchor", "front")
+			.style("fill", "#000")
+			.attr("transform", function(d, i, j) { barHeight = y.rangeBand() / n; return "translate(10," + (barHeight * j + barHeight / 2) + ")" })
+			.attr("class", "title")
+			.text(function(d) { return d.title; });
+
+	var xAxis = d3.svg.axis()
+			.scale(x)
+			.orient("top");
 
 	svg.append("g")
 			.attr("class", "x axis")
-			.attr("transform", "translate(0," + height + ")")
 			.call(xAxis);
-
-	var legend = svg.selectAll(".legend")
-			.data(reports.map(function(report) { return report.value.appPkg; }))
-		.enter().append("g")
-			.attr("class", "legend")
-			.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-
-	legend.append("rect")
-			.attr("x", width - 18)
-			.attr("width", 18)
-			.attr("height", 18)
-			.style("fill", function(d, i) { return color(i); });
-
-	legend.append("text")
-			.attr("x", width - 24)
-			.attr("y", 9)
-			.attr("dy", ".35em")
-			.style("text-anchor", "end")
-			.text(function(d) { return d; });
-
-	d3.selectAll(".d3-button").on("click", change);
-
-	var timeout = setTimeout(function() {
-		d3.select("button[value=\"grouped\"]").classed("active", true).each(change);
-		d3.select("button[value=\"stacked\"]").classed("active", false);
-	}, 2000);
-
-	function change() {
-		clearTimeout(timeout);
-		if (this.value === "grouped") transitionGrouped();
-		else transitionStacked();
-	}
-
-	function transitionGrouped() {
-		y.domain([0, yGroupMax]);
-
-		rect.transition()
-				.duration(500)
-				.delay(function(d, i) { return i * 10; })
-				.attr("x", function(d, i, j) { return x(d.x) + x.rangeBand() / n * j; })
-				.attr("width", x.rangeBand() / n)
-			.transition()
-				.attr("y", function(d) { return y(d.y); })
-				.attr("height", function(d) { return height - y(d.y); });
-	}
-
-	function transitionStacked() {
-		y.domain([0, yStackMax]);
-
-		rect.transition()
-				.duration(500)
-				.delay(function(d, i) { return i * 10; })
-				.attr("y", function(d) { return y(d.y0 + d.y); })
-				.attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
-			.transition()
-				.attr("x", function(d) { return x(d.x); })
-				.attr("width", x.rangeBand());
-	}
 }
 
 function calculateLayer(data) {
@@ -126,7 +67,7 @@ function calculateLayer(data) {
 	// };
 	// return a.map(function(d, i) { return {x: data[i]._id, y: d}; });
 
-	return [{x: data.value.userId, y: data.value.duration}]
+	return [{y: data.value.userId, x: data.value.duration, title: data.value.appPkg}]
 }
 // Inspired by Lee Byron's test data generator.
 function bumpLayer(n, o) {
