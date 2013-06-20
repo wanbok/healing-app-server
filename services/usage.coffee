@@ -11,6 +11,7 @@ class UsageService
 				userId: @userId,
 				appPkg: @appPkg,
 				startTime: @startTime,
+				endTime: @endTime,
 				duration: @duration,
 				latitude: @latitude,
 				longitude: @longitude,
@@ -21,9 +22,10 @@ class UsageService
 			reducedValue =
 				userId: if vals && vals.length > 0 then vals[0].userId else null,
 				appPkg: if vals && vals.length > 0 then vals[0].appPkg else null,
-				duration: 0,
+				duration: [],
 				urlInfo: if vals && vals.length > 0 then vals[0].urlInfo else null
 			for val in vals
+				reducedValue.startTime = if reducedValue.startTime > val.startTime then val.startTime
 				reducedValue.duration += if val.duration isnt 'undefined' then val.duration else 0
 			return reducedValue
 
@@ -39,11 +41,26 @@ class UsageService
 		baseDate = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0, 0)
 		switch query.scope
 			when "monthly"
-				o.query.startTime = {$gte: today.setMonth(today.getMonth() - beginningAgo)}
-			when "weekly" 
-				o.query.startTime = {$gte: today.setDate(today.getDate() - beginningAgo * 7)}
+				firstDayForMonth = today.getMonth() - beginningAgo
+				firstDayForNextMonth = firstDayForMonth + 1
+				o.query.$or = [
+					{startTime: {$gte: firstDayForMonth, $lt: firstDayForNextMonth}},
+					{endTime: {$gte: firstDayForMonth, $lt: firstDayForNextMonth}}
+				]
+			when "weekly"
+				startDay = today.getDate() - beginningAgo * 7
+				endDay = startDay + 7
+				o.query.$or = [
+					{startTime: {$gte: startDay, $lt: endDay}},
+					{endTime: {$gte: startDay, $lt: endDay}}
+				]
 			when "daily"
-				o.query.startTime = {$gte: today.setDate(today.getDate() - beginningAgo)}
+				startDay = today.getDate() - beginningAgo
+				endDay = startDay + 1
+				o.query.$or = [
+					{startTime: {$gte: startDay, $lt: endDay}},
+					{endTime: {$gte: startDay, $lt: endDay}}
+				]
 		console.log o.query.startTime
 		@aggregateUsages o, callback
 

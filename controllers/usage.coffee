@@ -7,7 +7,8 @@ class UsageController
   index: (req, res) ->
     from = req.query.from || 0
     length = req.query.length || 100
-    Usage.find {}, null, {sort: {startTime: -1}, skip: from, limit: length}, (err, usages) ->
+    query = if req.query.userId? then {userId: req.query.userId} else {}
+    Usage.find query, null, {sort: {startTime: -1}, skip: from, limit: length}, (err, usages) ->
       if err
         res.send err
       switch req.format
@@ -49,8 +50,7 @@ class UsageController
         else
           res.send err
           res.statusCode = 500
-    
-        
+
   # Gets usage by id
   show: (req, res) ->
     Usage.findById req.params.usage, (err, usage) ->
