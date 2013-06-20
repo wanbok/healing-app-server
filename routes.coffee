@@ -1,8 +1,16 @@
 # Routes
 module.exports = ->
+	# content negotiation function
+	addingFormat = (req, res, next) ->
+		req.format = req.route.path.substring(req.route.path.lastIndexOf('.') + 1)
+		next()
+
 	# 'Static page' routes
 	@get '/', require('./controllers/home').home
 	@get '/gcm', require('./controllers/gcm').test
+	@get '/reports', require('./controllers/report').report
+	@get '/reports.json', addingFormat, require('./controllers/report').report
+	@get '/reports/survey', require('./controllers/report').surveyCorrelation
 
 	# RESTful
 	@resource 'apps', require('./controllers/app')
@@ -10,7 +18,6 @@ module.exports = ->
 	@resource 'usages', require('./controllers/usage')
 	@resource 'surveys', require('./controllers/survey')
 	@resource 'friendships', require('./controllers/friendship')
-	@resource 'reports', require('./controllers/report')
 
 	# Nested by User
 	users = @resource 'users', require('./controllers/user')

@@ -5,10 +5,13 @@ Usage = require '../models/usage'
 class ReportController 
 
   # Lists all reports
-  index: (req, res) ->
+  report: (req, res) ->
     UsageService.usagesByParams req.query, (err, reports) ->
       switch req.format
         when 'json' then res.json reports
         else res.render 'reports/d3', {reports: reports, err: err}
+
+  surveyCorrelation: (req, res) ->
+  	
 
 module.exports = new ReportController
