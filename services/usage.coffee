@@ -1,4 +1,7 @@
 Usage = require '../models/usage'
+moment = require 'moment'
+
+FORMAT = "YYYYMMDDHH"
 
 class UsageService
 	mapReduce: (o, callback) ->
@@ -22,11 +25,25 @@ class UsageService
 			reducedValue =
 				userId: if vals && vals.length > 0 then vals[0].userId else null,
 				appPkg: if vals && vals.length > 0 then vals[0].appPkg else null,
-				duration: [],
+				durations: {},
 				urlInfo: if vals && vals.length > 0 then vals[0].urlInfo else null
+
 			for val in vals
-				reducedValue.startTime = if reducedValue.startTime > val.startTime then val.startTime
-				reducedValue.duration += if val.duration isnt 'undefined' then val.duration else 0
+				o.startTime = moment(o.startTime)
+				o.endTime = moment(o.endTime)
+				val.startTime = moment(val.startTime)
+				val.endTime = moment(val.endTime)
+
+				if o.startTime.isAfter(val.startTime)			# cut off before focus time
+					val.duration -= moment(o.startTime).diff(moment(val.startTime))
+					val.startTime = o.startTime
+
+				if o.endTime.isBefore(var.endTime)				# cut off after focus time
+					val.duration -= moment(o.endTime).diff(moment(val.endTime))
+					val.endTime = o.endTime
+
+				reducedValue.durations
+
 			return reducedValue
 
 		@mapReduce o, callback
@@ -41,25 +58,25 @@ class UsageService
 		baseDate = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0, 0)
 		switch query.scope
 			when "monthly"
-				firstDayForMonth = today.getMonth() - beginningAgo
-				firstDayForNextMonth = firstDayForMonth + 1
+				o.startTime = today.getMonth() - beginningAgo
+				o.endTime = o.startTime + 1
 				o.query.$or = [
-					{startTime: {$gte: firstDayForMonth, $lt: firstDayForNextMonth}},
-					{endTime: {$gte: firstDayForMonth, $lt: firstDayForNextMonth}}
+					{startTime: {$gte: o.startTime, $lt: o.endTime}},
+					{endTime: {$gte: o.startTime, $lt: o.endTime}}
 				]
 			when "weekly"
-				startDay = today.getDate() - beginningAgo * 7
-				endDay = startDay + 7
+				o.startTime = today.getDate() - beginningAgo * 7
+				o.endTime = o.startTime + 7
 				o.query.$or = [
-					{startTime: {$gte: startDay, $lt: endDay}},
-					{endTime: {$gte: startDay, $lt: endDay}}
+					{startTime: {$gte: o.startTime, $lt: o.endTime}},
+					{endTime: {$gte: o.startTime, $lt: o.endTime}}
 				]
 			when "daily"
-				startDay = today.getDate() - beginningAgo
-				endDay = startDay + 1
+				o.startTime = today.getDate() - beginningAgo
+				o.endTime = o.startTime + 1
 				o.query.$or = [
-					{startTime: {$gte: startDay, $lt: endDay}},
-					{endTime: {$gte: startDay, $lt: endDay}}
+					{startTime: {$gte: o.startTime, $lt: o.endTime}},
+					{endTime: {$gte: o.startTime, $lt: o.endTime}}
 				]
 		console.log o.query.startTime
 		@aggregateUsages o, callback
