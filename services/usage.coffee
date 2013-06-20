@@ -34,13 +34,17 @@ class UsageService
 		o.query = {userId: query.userId}
 		if typeof query.appPkg isnt 'undefined' then o.query.appPkg = query.appPkg
 		beginningAgo = if query.beginningAgo then query.beginningAgo else 1
+		# new Date(year, month, day, hours, minutes, seconds, milliseconds);
+		today = new Date()
+		baseDate = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0, 0)
 		switch query.scope
 			when "monthly"
-				o.query.startTime = {$gte: new Date().setMonth(new Date().getMonth() - beginningAgo)}
+				o.query.startTime = {$gte: today.setMonth(today.getMonth() - beginningAgo)}
 			when "weekly" 
-				o.query.startTime = {$gte: new Date().setDate(new Date().getDate() - beginningAgo * 7)}
+				o.query.startTime = {$gte: today.setDate(today.getDate() - beginningAgo * 7)}
 			when "daily"
-				o.query.startTime = {$gte: new Date().setDate(new Date().getDate() - beginningAgo)}
+				o.query.startTime = {$gte: today.setDate(today.getDate() - beginningAgo)}
+		console.log o.query.startTime
 		@aggregateUsages o, callback
 
 module.exports = new UsageService

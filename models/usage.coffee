@@ -4,6 +4,7 @@ Usage = new mongoose.Schema {
 	userId: { type: String, index: true, required: true },
 	appPkg: { type: String, index: true, required: true },
 	startTime: { type: Date, index: true },
+	endTime: { type: Date, index: true },
 	duration: Number,
 	latitude: Number,
 	longitude: Number,
