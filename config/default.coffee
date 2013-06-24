@@ -4,6 +4,9 @@ express = require 'express'
 assets = require 'connect-assets'
 mongoose = require 'mongoose'
 
+global.moment = require 'moment'
+global._ = require 'underscore'
+
 global.DB_NAME = 'healing'
 
 module.exports = ->
