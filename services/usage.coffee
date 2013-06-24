@@ -48,8 +48,8 @@ class UsageService
 			for val in vals
 				#startTime is date as number
 				#endTime is date as number
-				val.startTime = val.startTime.getTime()
-				val.endTime = val.endTime.getTime()
+				val.startTime = if val.startTime instanceof Date then val.startTime.getTime() else val.startTime
+				val.endTime = if val.endTime instanceof Date then val.endTime.getTime() else val.endTime
 
 				while val.duration > 0
 					previousStartTime = val.startTime
