@@ -9,7 +9,7 @@ class UsageService
 				console.log err
 			callback err, results
 
-	aggregateUsages: (o, callback) ->
+	aggregateUsagesByParams: (o, callback) ->
 		o.map = () ->
 			value =
 				userId: @userId,
@@ -107,6 +107,39 @@ class UsageService
 		if endTime?
 			o.scope.endTime = endTime
 
-		@aggregateUsages o, callback
+		@aggregateUsagesByParams o, callback
+
+	averageUsagesEachUsers: (callback) ->
+		o = {}
+		o.map = () ->
+			value =
+				userId: @userId,
+				appPkg: @appPkg,
+				startTime: @startTime,
+				endTime: @endTime,
+				duration: @duration,
+				latitude: @latitude,
+				longitude: @longitude,
+				urlInfo: @urlInfo
+
+			emit @userId, value
+
+		o.reduce = (key, vals) ->
+			reducedValue =
+				userId: if vals && vals.length > 0 then vals[0].userId else null,
+				startTime: if vals && vals.length > 0 then vals[0].startTime.getTime() else null,
+				endTime: if vals && vals.length > 0 then vals[0].endTime.getTime() else null,
+				accumulatedDuration: 0
+
+			for val in vals
+				reducedValue.startTime = Math.min reducedValue.startTime, val.startTime.getTime()
+				reducedValue.endTime = Math.min reducedValue.endTime, val.endTime.getTime()
+				reducedValue.accumulatedDuration += val.duration
+
+			reducedValue.nomalizedUsageDurationPerDay = reducedValue.accumulatedDuration * ((24*60*60*1000) / (reducedValue.endTime - reducedValue.startTime))
+
+			return reducedValue
+
+		@mapReduce o, callback
 
 module.exports = new UsageService
