@@ -138,7 +138,7 @@ class UsageService
 				reducedValue.startTime = if startTime? then Math.min reducedValue.startTime, startTime else reducedValue.startTime
 				reducedValue.endTime = if endTime? then Math.max reducedValue.endTime, endTime else reducedValue.endTime
 				reducedValue.accumulatedDuration += if val.duration? then val.duration else 0
-				reducedValue.monitor = reducedValue.monitor + "A: " + val.appPkg + ", D: " + val.duration + ", "
+				reducedValue.monitor = reducedValue.monitor + "A: " + val.appPkg + ", S: " + new Date(startTime) + ", " + ", D: " + val.duration + ", "
 
 			reducedValue.nomalizedUsageDurationPerDay = reducedValue.accumulatedDuration * ((24*60*60*1000) / (reducedValue.endTime - reducedValue.startTime))
 			reducedValue.startTime = new Date(reducedValue.startTime)
