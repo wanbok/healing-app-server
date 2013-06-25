@@ -133,7 +133,7 @@ class UsageService
 
 			for val in vals
 				reducedValue.startTime = Math.min reducedValue.startTime, if val.startTime instanceof Date then val.startTime.getTime() else val.startTime
-				reducedValue.endTime = Math.min reducedValue.endTime, if val.endTime instanceof Date then val.endTime.getTime() else val.endTime
+				reducedValue.endTime = Math.max reducedValue.endTime, if val.endTime instanceof Date then val.endTime.getTime() else val.endTime
 				reducedValue.accumulatedDuration += val.duration
 
 			reducedValue.nomalizedUsageDurationPerDay = reducedValue.accumulatedDuration * ((24*60*60*1000) / (reducedValue.endTime - reducedValue.startTime))
