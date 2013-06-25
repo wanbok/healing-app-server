@@ -4,10 +4,14 @@ FORMAT = "YYYYMMDDHH"
 
 class UsageService
 	mapReduce: (o, callback) ->
-		Usage.mapReduce o, (err, results) ->
+		Usage.mapReduce o, (err, model, stats) ->
 			if err?
 				console.log err
-			callback err, results
+
+			model.find().exec (err, docs) ->
+				if err?
+					console.log err
+				callback err, docs
 
 	aggregateUsagesByParams: (o, callback) ->
 		o.map = () ->
@@ -107,15 +111,16 @@ class UsageService
 		if endTime?
 			o.scope.endTime = endTime
 
+		o.out = {merge: 'reportUsagesByParams'}
+
 		@aggregateUsagesByParams o, callback
 
 	averageUsagesEachUsers: (callback) ->
-		o = 
-			query: {}
+		o = {}
 		o.map = () ->
 			value =
 				# userId: @userId,
-				appPkg: @appPkg,
+				# appPkg: @appPkg,
 				startTime: @startTime,
 				endTime: @endTime,
 				duration: @duration#,
@@ -147,6 +152,8 @@ class UsageService
 			reducedValue.endTime = new Date(reducedValue.endTime)
 
 			return reducedValue
+
+		o.out = {merge: 'reportAverageUsagesEachUsers'}
 
 		@mapReduce o, callback
 
