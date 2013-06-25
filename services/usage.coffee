@@ -110,7 +110,8 @@ class UsageService
 		@aggregateUsagesByParams o, callback
 
 	averageUsagesEachUsers: (callback) ->
-		o = {}
+		o = 
+			query: {}
 		o.map = () ->
 			value =
 				# userId: @userId,
@@ -130,7 +131,8 @@ class UsageService
 				startTime: new Date().getTime(),
 				endTime: 0,
 				accumulatedDuration: 0,
-				monitor: ""
+				monitor: "",
+				count: vals.length
 
 			for val in vals
 				startTime = if val.startTime instanceof Date then val.startTime.getTime() else val.startTime
