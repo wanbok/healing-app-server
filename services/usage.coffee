@@ -127,13 +127,13 @@ class UsageService
 		o.reduce = (key, vals) ->
 			reducedValue =
 				userId: if vals && vals.length > 0 then vals[0].userId else null,
-				startTime: if vals && vals.length > 0 then vals[0].startTime.getTime() else null,
-				endTime: if vals && vals.length > 0 then vals[0].endTime.getTime() else null,
+				startTime: new Date().getTime(),
+				endTime: 0,
 				accumulatedDuration: 0
 
 			for val in vals
-				reducedValue.startTime = Math.min reducedValue.startTime, val.startTime.getTime()
-				reducedValue.endTime = Math.min reducedValue.endTime, val.endTime.getTime()
+				reducedValue.startTime = Math.min reducedValue.startTime, if val.startTime instanceof Date then val.startTime.getTime() else val.startTime
+				reducedValue.endTime = Math.min reducedValue.endTime, if val.endTime instanceof Date then val.endTime.getTime() else val.endTime
 				reducedValue.accumulatedDuration += val.duration
 
 			reducedValue.nomalizedUsageDurationPerDay = reducedValue.accumulatedDuration * ((24*60*60*1000) / (reducedValue.endTime - reducedValue.startTime))
