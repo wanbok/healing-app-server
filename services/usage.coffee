@@ -25,14 +25,14 @@ class UsageService
 				value.raw =
 					duration: value.duration
 					startTime: value.startTime
-				value.duration -= abs(startTime - value.startTime)
+				value.duration -= Math.abs(startTime - value.startTime)
 				value.startTime = startTime
 
 			if endTime? and endTime < value.endTime					# cut off after focus time
 				value.raw =
 					duration: value.duration
 					endTime: value.endTime
-				value.duration -= abs(endTime - value.endTime)
+				value.duration -= Math.abs(endTime - value.endTime)
 				value.endTime = endTime
 
 			emit @appPkg, value
