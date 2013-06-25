@@ -113,20 +113,20 @@ class UsageService
 		o = {}
 		o.map = () ->
 			value =
-				userId: @userId,
-				appPkg: @appPkg,
+				# userId: @userId,
+				# appPkg: @appPkg,
 				startTime: @startTime,
 				endTime: @endTime,
-				duration: @duration,
-				latitude: @latitude,
-				longitude: @longitude,
-				urlInfo: @urlInfo
+				duration: @duration#,
+				# latitude: @latitude,
+				# longitude: @longitude,
+				# urlInfo: @urlInfo
 
 			emit @userId, value
 
 		o.reduce = (key, vals) ->
 			reducedValue =
-				userId: if vals && vals.length > 0 then vals[0].userId else null,
+				userId: key,
 				startTime: new Date().getTime(),
 				endTime: 0,
 				accumulatedDuration: 0
