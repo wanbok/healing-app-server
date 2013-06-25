@@ -78,29 +78,27 @@ class UsageService
 		if typeof query.appPkg isnt 'undefined' then o.query.appPkg = query.appPkg
 		beginningAgo = if query.beginningAgo then query.beginningAgo else 1
 		# new Date(year, month, day, hours, minutes, seconds, milliseconds);
-		today = new Date()
-		baseDate = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0, 0)
 		switch query.scope
 			when "monthly"
-				startTime = today.getMonth() - beginningAgo
-				endTime = startTime + 1
+				startTime = moment().startOf('month').subtract('months', beginningAgo).valueOf()
+				endTime = moment().endOf('month').subtract('months', beginningAgo).valueOf()
 				o.query.$or = [
-					{startTime: {$gte: startTime, $lt: endTime}},
-					{endTime: {$gte: startTime, $lt: endTime}}
+					{startTime: {$gte: startTime, $lte: endTime}},
+					{endTime: {$gte: startTime, $lte: endTime}}
 				]
 			when "weekly"
-				startTime = today.getDate() - beginningAgo * 7
-				endTime = startTime + 7
+				startTime = moment().startOf('week').subtract('weeks', beginningAgo).valueOf()
+				endTime = moment().endOf('week').subtract('weeks', beginningAgo).valueOf()
 				o.query.$or = [
-					{startTime: {$gte: startTime, $lt: endTime}},
-					{endTime: {$gte: startTime, $lt: endTime}}
+					{startTime: {$gte: startTime, $lte: endTime}},
+					{endTime: {$gte: startTime, $lte: endTime}}
 				]
 			when "daily"
-				startTime = today.getDate() - beginningAgo
-				endTime = startTime + 1
+				startTime = moment().startOf('day').subtract('days', beginningAgo).valueOf()
+				endTime = moment().endOf('day').subtract('days', beginningAgo).valueOf()
 				o.query.$or = [
-					{startTime: {$gte: startTime, $lt: endTime}},
-					{endTime: {$gte: startTime, $lt: endTime}}
+					{startTime: {$gte: startTime, $lte: endTime}},
+					{endTime: {$gte: startTime, $lte: endTime}}
 				]
 
 		o.scope = {}
