@@ -129,7 +129,8 @@ class UsageService
 				userId: key,
 				startTime: new Date().getTime(),
 				endTime: 0,
-				accumulatedDuration: 0
+				accumulatedDuration: 0,
+				monitor: ""
 
 			for val in vals
 				startTime = if val.startTime instanceof Date then val.startTime.getTime() else val.startTime
@@ -137,10 +138,11 @@ class UsageService
 				reducedValue.startTime = if startTime? then Math.min reducedValue.startTime, startTime else reducedValue.startTime
 				reducedValue.endTime = if endTime? then Math.max reducedValue.endTime, endTime else reducedValue.endTime
 				reducedValue.accumulatedDuration += if val.duration? then val.duration else 0
+				reducedValue.monitor = reducedValue.monitor + "D: " + val.duration + ", "
 
+			reducedValue.nomalizedUsageDurationPerDay = reducedValue.accumulatedDuration * ((24*60*60*1000) / (reducedValue.endTime - reducedValue.startTime))
 			reducedValue.startTime = new Date(reducedValue.startTime)
 			reducedValue.endTime = new Date(reducedValue.endTime)
-			reducedValue.nomalizedUsageDurationPerDay = reducedValue.accumulatedDuration * ((24*60*60*1000) / (reducedValue.endTime - reducedValue.startTime))
 
 			return reducedValue
 
