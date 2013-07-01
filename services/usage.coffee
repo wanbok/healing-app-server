@@ -111,19 +111,21 @@ class UsageService
 		if endTime?
 			o.scope.endTime = endTime
 
-		o.out = {merge: 'reportUsagesByParams'}
+		o.out = {replace: 'reportUsagesByParams'}
 
 		@aggregateUsagesByParams o, callback
 
-	averageUsagesEachUsers: (callback) ->
+	averageUsagesEachUsers: (query, callback) ->
 		o = {}
+		o.query = query || {}
 		o.map = () ->
 			value =
-				# userId: @userId,
+				userId: @userId,
 				# appPkg: @appPkg,
 				startTime: @startTime,
 				endTime: @endTime,
-				duration: @duration#,
+				accumulatedDuration: @duration,
+				duration: @duration
 				# latitude: @latitude,
 				# longitude: @longitude,
 				# urlInfo: @urlInfo
@@ -136,24 +138,25 @@ class UsageService
 				startTime: new Date().getTime(),
 				endTime: 0,
 				accumulatedDuration: 0,
-				monitor: "",
 				count: vals.length
 
-			for val in vals
+			vals.forEach (val) ->
 				startTime = if val.startTime instanceof Date then val.startTime.getTime() else val.startTime
 				endTime = if val.endTime instanceof Date then val.endTime.getTime() else val.endTime
 				reducedValue.startTime = if startTime? then Math.min reducedValue.startTime, startTime else reducedValue.startTime
 				reducedValue.endTime = if endTime? then Math.max reducedValue.endTime, endTime else reducedValue.endTime
 				reducedValue.accumulatedDuration += if val.duration? then val.duration else 0
-				reducedValue.monitor = reducedValue.monitor + "A: " + val.appPkg + ", S: " + new Date(startTime) + ", " + ", D: " + val.duration + ", "
+				return
 
+			return reducedValue
+		
+		o.finalize = (key, reducedValue) ->
 			reducedValue.nomalizedUsageDurationPerDay = reducedValue.accumulatedDuration * ((24*60*60*1000) / (reducedValue.endTime - reducedValue.startTime))
 			reducedValue.startTime = new Date(reducedValue.startTime)
 			reducedValue.endTime = new Date(reducedValue.endTime)
-
 			return reducedValue
 
-		o.out = {merge: 'reportAverageUsagesEachUsers'}
+		o.out = {replace: 'reportAverageUsagesEachUsers'}
 
 		@mapReduce o, callback
 
