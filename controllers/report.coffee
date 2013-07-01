@@ -6,15 +6,25 @@ class ReportController
 
 	# Lists all reports
 	report: (req, res) ->
-		if req.query.userId?
-			UsageService.usagesByParams req.query, (err, reports) ->
+		UsageService.usagesByParams req.query, (err, reports) ->
+			switch req.format
+				when 'json' then res.json reports
+				else res.render 'reports/d3', {reports: reports, err: err}
+
+	correlate: (req, res) ->
+		if _.isEmpty req.query
+			Usage.distinct 'userId', {}, (err, docs) ->
+				if err?
+				  console.log err
 				switch req.format
-					when 'json' then res.json reports
-					else res.render 'reports/d3', {reports: reports, err: err}
+					when 'json' then res.json docs
+					else res.render 'reports/correlate', {docs: docs, err: err}
 		else
-			UsageService.averageUsagesEachUsers (err, reports) ->
+			UsageService.averageUsagesEachUsers req.query, (err, docs) ->
+				if err?
+				  console.log err
 				switch req.format
-					when 'json' then res.json reports
-					else res.render 'reports/d3', {reports: reports, err: err}
+					when 'json' then res.json docs
+					else res.render 'reports/correlate', {docs: docs, err: err}
 
 module.exports = new ReportController

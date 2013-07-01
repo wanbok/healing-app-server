@@ -22,16 +22,22 @@ module.exports = ->
 	# DB Setting.
 	# db_config = "mongodb://#{config.DB_USER}:#{config.DB_PASS}@#{config.DB_HOST}:#{config.DB_PORT}/#{config.DB_NAME}"
 	# mongoose.connect db_config
-	mongoose.connect 'mongodb://localhost/' + DB_NAME
+	mongoose.connect 'mongodb://wanbok.com/' + DB_NAME
+
+	# Access-Control-Allow-Origin
+	# @use (req, res, next) ->
+	# 	res.header 'Access-Control-Allow-Origin', '*'
+	# 	res.header 'Access-Control-Allow-Headers', 'X-Requested-With'
+	# 	next()
+
+	# Allow parsing of request bodies and '_method' parameters
+	@use express.bodyParser()
+	@use express.methodOverride()
 
 	# Add Connect Assets.
 	@use assets()
 	# Set the public folder as static assets.
 	@use express.static(baseDir + '/public')
-	
-	# Allow parsing of request bodies and '_method' parameters
-	@use express.bodyParser()
-	@use express.methodOverride()
 	
 	# Enable cookies
 	@use express.cookieParser('your secret here')

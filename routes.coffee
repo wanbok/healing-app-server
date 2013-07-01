@@ -10,6 +10,8 @@ module.exports = ->
 	@get '/gcm', require('./controllers/gcm').test
 	@get '/reports', require('./controllers/report').report
 	@get '/reports.json', addingFormat, require('./controllers/report').report
+	@get '/correlate', require('./controllers/report').correlate
+	@get '/correlate.json', addingFormat, require('./controllers/report').correlate
 	# @get '/reports/survey', require('./controllers/report').surveyCorrelation
 
 	# RESTful
