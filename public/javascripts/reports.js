@@ -36,10 +36,10 @@ function correlate(numbers) {
   function drawBackground(data) {
     if (data != null) {
       x.domain(d3.extent(data, function(d) { return Math.round(d.measuredData.nomalizedUsageDurationPerDay); })).nice();
-      y.domain(d3.extent(data, function(d) { return d.usage_duration_per_day; })).nice();
+      y.domain(d3.extent(data, function(d) { return d.aggregation.total; })).nice();
     } else {
-      x.domain(d3.extent([0, 24*60*60*1000], function(d) { return d; })).nice();
-      y.domain(d3.extent([0, 24], function(d) { return d; })).nice();
+      x.domain(d3.extent([0, 8*60*60*1000], function(d) { return d; })).nice();
+      y.domain(d3.extent([0, 60], function(d) { return d; })).nice();
     };
 
     svg.append("g")
@@ -62,7 +62,7 @@ function correlate(numbers) {
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("자가예측사용시 (시)");
+        .text("설문점수");
 
     d3.select('svg g.chart')
       .append('text')
@@ -72,24 +72,53 @@ function correlate(numbers) {
     d3.select('svg g.chart')
       .append('line')
       .attr('id', 'bestfit')
-      .attr({'x1': x(0), 'y1': y(0), 'x2': x(24*60*60*1000), 'y2': y(24)})
-      .style('opacity', 1);
+  }
+
+  function getCorrelation(xArray, yArray) {
+    function sum(m, v) {return m + v;}
+    function sumSquares(m, v) {return m + v * v;}
+    function filterNaN(m, v, i) {isNaN(v) ? null : m.push(i); return m;}
+
+    // clean the data (because we know that some values are missing)
+    var xNaN = _.reduce(xArray, filterNaN , []);
+    var yNaN = _.reduce(yArray, filterNaN , []);
+    var include = _.intersection(xNaN, yNaN);
+    var fX = _.map(include, function(d) {return xArray[d];});
+    var fY = _.map(include, function(d) {return yArray[d];});
+
+    var sumX = _.reduce(fX, sum, 0);
+    var sumY = _.reduce(fY, sum, 0);
+    var sumX2 = _.reduce(fX, sumSquares, 0);
+    var sumY2 = _.reduce(fY, sumSquares, 0);
+    var sumXY = _.reduce(fX, function(m, v, i) {return m + v * fY[i];}, 0);
+
+    var n = fX.length;
+    var ntor = ( ( sumXY ) - ( sumX * sumY / n) );
+    var dtorX = sumX2 - ( sumX * sumX / n);
+    var dtorY = sumY2 - ( sumY * sumY / n);
+   
+    var r = ntor / (Math.sqrt( dtorX * dtorY )); // Pearson ( http://www.stat.wmich.edu/s216/book/node122.html )
+    var m = ntor / dtorX; // y = mx + b
+    var b = ( sumY - m * sumX ) / n;
+
+    // console.log(r, m, b);
+    return {r: r, m: m, b: b};
   }
 
   function applyData(data) {
     svg.selectAll(".dot")
         .data(data)
       .enter().append("circle")
-        .attr("id", function(d) { return d.user; })
+        .attr("id", function(d) { return d.survey.user; })
         .attr("class", "dot")
         .attr("r", 5)
         .attr("cx", function(d) { return x(Math.round(d.measuredData.nomalizedUsageDurationPerDay)); })
-        .attr("cy", function(d) { return y(d.usage_duration_per_day); })
-        .style("fill", function(d) { return color(d.sex); })
+        .attr("cy", function(d) { return y(d.aggregation.total); })
+        .style("fill", function(d) { return color(d.survey.sex); })
         .style('cursor', 'pointer')
         .on('mouseover', function(d) {
           d3.select('svg g #userLabel')
-            .text(d.user + ", 예측:" + d.usage_duration_per_day + ", 측정:" + Math.round(d.measuredData.nomalizedUsageDurationPerDay / (60*60*1000)))
+            .text(d.survey.user + ", 점수:" + d.aggregation.total + ", 측정:" + Math.round(d.measuredData.nomalizedUsageDurationPerDay / (60*60*1000)))
             .transition()
             .style('opacity', 1);
         })
@@ -118,13 +147,26 @@ function correlate(numbers) {
         .attr("dy", ".35em")
         .style("text-anchor", "end")
         .text(function(d) { return d; });
+
+    var xArray = _.map(data, function(d) {return Math.round(d.measuredData.nomalizedUsageDurationPerDay);});
+    var yArray = _.map(data, function(d) {return d.aggregation.total;});
+    var c = getCorrelation(xArray, yArray);
+    var x1 = x.domain()[0], y1 = c.m * x1 + c.b;
+    var x2 = x.domain()[1], y2 = c.m * x2 + c.b;
+
+    d3.select('svg g.chart #bestfit')
+      .style('opacity', 0)
+      .attr({'x1': x(x1), 'y1': y(y1), 'x2': x(x2), 'y2': y(y2)})
+      .transition()
+      .duration(1500)
+      .style('opacity', 1);
   }
 
   function pipelineCall(index) {
     d3.json("/correlate.json?userId=" + encodeURIComponent(numbers[index]), function(error, data) {
       console.log(numbers[index] + ": " + JSON.stringify(data));
       var userId = data[0].value.userId.replace(/\+82/, "0");
-      var result = $.grep(mergedData, function(d) { return d.user == userId; });
+      var result = $.grep(mergedData, function(d) { return d.survey.user == userId; });
       if (result.length > 0) {
         result[0].measuredData = data[0].value;
       }
@@ -145,7 +187,7 @@ function correlate(numbers) {
     d3.json("http://wanbok.com/surveys.json", function(error, data) {
       console.log("Survey count: " + data.length);
       data.forEach(function(d){
-        d.user = d.user.replace(/-/gi, "");
+        d.survey.user = d.survey.user.replace(/-/gi, "");
       });
       mergedData = data
       pipelineCall(0);
@@ -179,7 +221,6 @@ function reports(reports) {
       .rangeRoundBands([0, height], .08);
 
   var color = d3.scale.category20();
-
 
   var svg = d3.select("div.span12").append("svg")
       .attr("width", width + margin.left + margin.right)
