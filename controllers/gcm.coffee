@@ -22,4 +22,44 @@ class GCMController
 			res.render 'index',
 				title: 'Welcome! You can test GCM by your Android.'
 
+	forbidden: (registration_id, appPkg) ->
+		message =
+			registration_id: registration_id,
+			collapse_key: 'forbidden',
+			time_to_live: 3,
+			delay_while_idle: true,
+			msg: '금지시간이 업데이트 되었습니다.',
+			'data.flag': 'forbidden',
+			'data.package': appPkg
+			
+		gcm.send message, gcmCallback
+
+	survey: (survey_id, registration_id) ->
+		message =
+			registration_id: registration_id,
+			collapse_key: 'survey',
+			time_to_live: 3,
+			delay_while_idle: true,
+			msg: '설문에 참여해주세요.',
+			'data.flag': 'survey'
+			'data.survey_id' : survey_id
+		gcm.send message, gcmCallback
+
+	notice: (notice, registration_id) ->
+		message =
+			registration_id: registration_id,
+			collapse_key: 'notice',
+			time_to_live: 3,
+			delay_while_idle: true,
+			msg: '공지사항',
+			'data.flag': 'notice'
+			'data.notice' : notice
+		gcm.send message, gcmCallback
+
 module.exports = new GCMController
+
+gcmCallback = (err, messageId) ->
+	if err?
+		console.log ("GCM Error : " + err)
+	else
+		console.log ("Succeed to send GCM messageId : " + messageId)

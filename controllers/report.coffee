@@ -12,19 +12,11 @@ class ReportController
 				else res.render 'reports/d3', {reports: reports, err: err}
 
 	correlate: (req, res) ->
-		if _.isEmpty req.query
-			Usage.distinct 'userId', {}, (err, docs) ->
-				if err?
-				  console.log err
-				switch req.format
-					when 'json' then res.json docs
-					else res.render 'reports/correlate', {docs: docs, err: err}
-		else
-			UsageService.averageUsagesEachUsers req.query, (err, docs) ->
-				if err?
-				  console.log err
-				switch req.format
-					when 'json' then res.json docs
-					else res.render 'reports/correlate', {docs: docs, err: err}
+		UsageService.averageUsagesEachUsers req.query, (err, docs) ->
+			if err?
+			  console.log err
+			switch req.format
+				when 'json' then res.json docs
+				else res.render 'reports/correlate', {docs: docs, err: err}
 
 module.exports = new ReportController
