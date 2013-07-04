@@ -1,12 +1,14 @@
 Install = require '../models/install'
 Forbidden = require '../models/forbidden'
+User = require '../models/user'
+gcm = require './gcm'
 
 # Install model's CRUD controller.
 class InstallController 
 
   # Lists all installs
   index: (req, res) ->
-    Install.find {}, (err, installs) ->
+    Install.find {userId: req.params.user}, (err, installs) ->
       switch req.format
         when 'json' then res.json installs
         else res.render 'installs/index', {installs: installs, currentUser: req.params.user}
@@ -96,6 +98,13 @@ responseResult = (req, res, err, install) ->
     console.log 'Succeed updating install'
     console.log install
     res.statusCode = 200
+    User.findOne {userId: req.params.user}, (err, user) ->
+      if err?
+        console.log err
+      if user.gcmRegId?
+        gcm.forbidden user.gcmRegId, install.appPkg
+      else
+        console.log (user.userId + " doesn't have gcmRegId")
   else
     console.log 'Failed updating install'
     res.statusCode = 500

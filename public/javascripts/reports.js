@@ -4,8 +4,12 @@ Array.prototype.remove = function(from, to) {
   return this.push.apply(this, rest);
 };
 
-function correlate(numbers) {
-  var mergedData = []
+function correlate() {
+  var xAxisMenu = ['하루평균사용시간(ms)', '하루평균앱실행횟수(회)'];
+  var xAxisSelected = xAxisMenu[0]
+  var yAxisMenu = ['설문점수', '일평균추정사용시간(시)'];
+  var yAxisSelected = yAxisMenu[0]
+  var mergedData = [];
   var margin = {top: 20, right: 20, bottom: 30, left: 40},
       width = 800 - margin.left - margin.right,
       height = 800 - margin.top - margin.bottom;
@@ -15,6 +19,8 @@ function correlate(numbers) {
 
   var y = d3.scale.linear()
       .range([height, 0]);
+
+  var dotSize = 8;
 
   var color = d3.scale.category10();
 
@@ -33,45 +39,120 @@ function correlate(numbers) {
       .classed('chart', true)
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  function drawBackground(data) {
+  //Build menus
+  d3.select('#x-axis-menu')
+    .selectAll('button')
+    .data(xAxisMenu)
+    .enter()
+    .append('button')
+    .classed('btn d3-button', true)
+    .classed('active', function(d){
+      return d === xAxisSelected;
+    })
+    .text(function(d){return d;})
+    .on('click', function(d) {
+      xAxisSelected = d;
+      updateChart(mergedData);
+      // updateMenus();
+    });
+
+  d3.select('#y-axis-menu')
+    .selectAll('button')
+    .data(yAxisMenu)
+    .enter()
+    .append('button')
+    .classed('btn d3-button', true)
+    .classed('active', function(d){
+      return d === yAxisSelected;
+    })
+    .text(function(d){return d;})
+    .on('click', function(d) {
+      yAxisSelected = d;
+      updateChart(mergedData);
+      // updateMenus();
+    })
+
+  function updateScaleDomain(data) {
     if (data != null) {
-      x.domain(d3.extent(data, function(d) { return Math.round(d.measuredData.nomalizedUsageDurationPerDay); })).nice();
-      y.domain(d3.extent(data, function(d) { return d.aggregation.total; })).nice();
+      x.domain(d3.extent(data, function(d) { return d[xAxisSelected]; })).nice();
+      y.domain(d3.extent(data, function(d) { return d[yAxisSelected]; })).nice();
     } else {
-      x.domain(d3.extent([0, 8*60*60*1000], function(d) { return d; })).nice();
-      y.domain(d3.extent([0, 60], function(d) { return d; })).nice();
+      maxForX = xAxisSelected === xAxisMenu[0] ? 24*60*60*1000 : 1000;
+      x.domain(d3.extent([0, maxForX], function(d) { return d; })).nice();
+      maxForY = yAxisSelected === yAxisMenu[0] ? 60 : 24;
+      y.domain(d3.extent([0, maxForY], function(d) { return d; })).nice();
     };
+  }
+
+  function updateChart(data) {
+    updateScaleDomain(data);
+    d3.select('svg g.chart')
+      .selectAll('circle')
+      .transition()
+      .duration(500)
+      .ease('quad-out')
+      .attr('cx', function(d) {
+        return x(d[xAxisSelected]);
+      })
+      .attr('cy', function(d) {
+        return y(d[yAxisSelected]);
+      })
+      .attr('r', function(d) {
+        return dotSize;
+      });
+
+    d3.select('#xAxis')
+      .transition()
+      .call(xAxis);
+
+    d3.select('#xLabel')
+      .text(xAxisSelected);
+
+    d3.select('#yAxis')
+      .transition()
+      .call(yAxis);
+
+    d3.select('#yLabel')
+      .text(yAxisSelected);
+
+    updateCorrelation(data);
+  }
+
+  function drawBackground(data) {
+    updateScaleDomain(data);
 
     svg.append("g")
-        .attr("class", "x axis")
+        .attr("id", "xAxis")
+        .classed("axis", true)
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis)
       .append("text")
-        .attr("class", "label")
+        .attr("id", "xLabel")
         .attr("x", width)
         .attr("y", -6)
         .style("text-anchor", "end")
-        .text("기기측정시간 (ms)");
+        .text(xAxisSelected);
 
     svg.append("g")
-        .attr("class", "y axis")
+        .attr("id", "yAxis")
+        .classed("axis", true)
         .call(yAxis)
       .append("text")
-        .attr("class", "label")
+        .attr("id", "yLabel")
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("설문점수");
+        .text(yAxisSelected);
 
     d3.select('svg g.chart')
       .append('text')
       .attr({'id': 'userLabel', 'x': 0, 'y': 170})
-      .style({'font-size': '40px', 'font-weight': 'bold', 'fill': '#ddd'});
+      .style({'font-size': '20px', 'font-weight': 'bold', 'fill': '#ddd'});
 
     d3.select('svg g.chart')
       .append('line')
-      .attr('id', 'bestfit')
+      .attr('id', 'bestfit');
   }
 
   function getCorrelation(xArray, yArray) {
@@ -105,23 +186,50 @@ function correlate(numbers) {
     return {r: r, m: m, b: b};
   }
 
+  function updateCorrelation(data) {
+    var xArray = _.map(data, function(d) {return d[xAxisSelected];});
+    var yArray = _.map(data, function(d) {return d[yAxisSelected];});
+    var c = getCorrelation(xArray, yArray);
+    var x1 = x.domain()[0], y1 = c.m * x1 + c.b;
+    var x2 = x.domain()[1], y2 = c.m * x2 + c.b;
+
+    d3.select('svg g.chart #bestfit')
+      .style('opacity', 0)
+      .attr({'x1': x(x1), 'y1': y(y1), 'x2': x(x2), 'y2': y(y2)})
+      .transition()
+      .duration(1500)
+      .style('opacity', 1);
+  }
+
+  function changeDescription(d) {
+    var description = d.survey.user + ", ";
+    if (xAxisSelected === xAxisMenu[0]) {
+      description += "X: 약" + Math.round(d[xAxisSelected] / (60*60*1000)) +
+        "시간(" + d[xAxisSelected] + "), "
+    } else if (xAxisSelected === xAxisMenu[1]) {
+      description += "X: 약" + d[xAxisSelected] + "회, "
+    };
+    description += "Y: " + d[yAxisSelected];
+    d3.select('svg g #userLabel')
+      .text(description)
+      .transition()
+      .style('opacity', 1);
+  }
+
   function applyData(data) {
+    updateScaleDomain(data);
+    updateChart(data);
     svg.selectAll(".dot")
         .data(data)
       .enter().append("circle")
         .attr("id", function(d) { return d.survey.user; })
         .attr("class", "dot")
-        .attr("r", 5)
-        .attr("cx", function(d) { return x(Math.round(d.measuredData.nomalizedUsageDurationPerDay)); })
-        .attr("cy", function(d) { return y(d.aggregation.total); })
+        .attr("r", dotSize)
+        .attr("cx", function(d) { return x(d[xAxisSelected]); })
+        .attr("cy", function(d) { return y(d[yAxisSelected]); })
         .style("fill", function(d) { return color(d.survey.sex); })
         .style('cursor', 'pointer')
-        .on('mouseover', function(d) {
-          d3.select('svg g #userLabel')
-            .text(d.survey.user + ", 점수:" + d.aggregation.total + ", 측정:" + Math.round(d.measuredData.nomalizedUsageDurationPerDay / (60*60*1000)))
-            .transition()
-            .style('opacity', 1);
-        })
+        .on('mouseover', changeDescription)
         .on('mouseout', function(d) {
           d3.select('svg g #userLabel')
             .transition()
@@ -148,38 +256,26 @@ function correlate(numbers) {
         .style("text-anchor", "end")
         .text(function(d) { return d; });
 
-    var xArray = _.map(data, function(d) {return Math.round(d.measuredData.nomalizedUsageDurationPerDay);});
-    var yArray = _.map(data, function(d) {return d.aggregation.total;});
-    var c = getCorrelation(xArray, yArray);
-    var x1 = x.domain()[0], y1 = c.m * x1 + c.b;
-    var x2 = x.domain()[1], y2 = c.m * x2 + c.b;
-
-    d3.select('svg g.chart #bestfit')
-      .style('opacity', 0)
-      .attr({'x1': x(x1), 'y1': y(y1), 'x2': x(x2), 'y2': y(y2)})
-      .transition()
-      .duration(1500)
-      .style('opacity', 1);
+    updateCorrelation(data);
   }
 
-  function pipelineCall(index) {
-    d3.json("/correlate.json?userId=" + encodeURIComponent(numbers[index]), function(error, data) {
-      console.log(numbers[index] + ": " + JSON.stringify(data));
-      var userId = data[0].value.userId.replace(/\+82/, "0");
-      var result = $.grep(mergedData, function(d) { return d.survey.user == userId; });
-      if (result.length > 0) {
-        result[0].measuredData = data[0].value;
-      }
-      if (numbers.length > index + 1) {
-        pipelineCall(index + 1);
-      } else {
-        $.each(mergedData, function(i){
-          if(typeof(mergedData[i]) == 'undefined' || typeof(mergedData[i].measuredData) == 'undefined') {
-            mergedData.remove(i);
-          }
-        });
-        applyData(mergedData);
-      };
+  function pullData(index) {
+    d3.json("/correlate.json", function(error, data) {
+      data.forEach(function(d){
+        var userId = d.value.userId.replace(/\+82/, "0");
+        var result = $.grep(mergedData, function(dd) { return dd.survey.user === userId;});
+        if (result.length > 0) {
+          result[0].measuredData = d.value;
+          result[0][xAxisMenu[0]] = Math.round(d.value.nomalizedUsageDurationPerDay);
+          result[0][xAxisMenu[1]] = Math.round(d.value.nomalizedAppChangingCountPerDay);
+        }
+      });
+      $.each(mergedData, function(i){       // 지워진 데이터로 인해 인덱스가 밀리는 현상이 없도록 $.each 함수를 사용함.
+        if(typeof(mergedData[i]) === 'undefined' || typeof(mergedData[i].measuredData) === 'undefined') {
+          mergedData.remove(i);
+        }
+      });
+      applyData(mergedData);
     });
   }
 
@@ -188,9 +284,11 @@ function correlate(numbers) {
       console.log("Survey count: " + data.length);
       data.forEach(function(d){
         d.survey.user = d.survey.user.replace(/-/gi, "");
+        d[yAxisMenu[0]] = d.aggregation.total;
+        d[yAxisMenu[1]] = d.survey.usage_duration_per_day;
       });
       mergedData = data
-      pipelineCall(0);
+      pullData();
     });
   }
 
