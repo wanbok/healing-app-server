@@ -116,6 +116,8 @@ function correlate() {
       .text(yAxisSelected);
 
     updateCorrelation(data);
+    drawExtraCorrelation(data, "M");
+    drawExtraCorrelation(data, "F");
   }
 
   function drawBackground(data) {
@@ -152,7 +154,15 @@ function correlate() {
 
     d3.select('svg g.chart')
       .append('line')
-      .attr('id', 'bestfit');
+      .attr('id', 'allBestfit');
+      
+    d3.select('svg g.chart')
+      .append('line')
+      .attr('id', 'mBestfit');
+      
+    d3.select('svg g.chart')
+      .append('line')
+      .attr('id', 'fBestfit');
   }
 
   function getCorrelation(xArray, yArray) {
@@ -193,11 +203,31 @@ function correlate() {
     var x1 = x.domain()[0], y1 = c.m * x1 + c.b;
     var x2 = x.domain()[1], y2 = c.m * x2 + c.b;
 
-    d3.select('svg g.chart #bestfit')
+    d3.select('svg g.chart #allBestfit')
       .style('opacity', 0)
       .attr({'x1': x(x1), 'y1': y(y1), 'x2': x(x2), 'y2': y(y2)})
       .transition()
       .duration(1500)
+      .style('opacity', 1);
+  }
+
+  function drawExtraCorrelation(rawData, type) {
+    var data = _.reduce(rawData, function(m, v, i) {
+      v.survey.sex === type ? m.push(v) : null;
+      return m;
+    }, []);
+    var xArray = _.map(data, function(d) {return d[xAxisSelected];});
+    var yArray = _.map(data, function(d) {return d[yAxisSelected];});
+    var c = getCorrelation(xArray, yArray);
+    var x1 = x.domain()[0], y1 = c.m * x1 + c.b;
+    var x2 = x.domain()[1], y2 = c.m * x2 + c.b;
+
+    d3.select("svg g.chart #"+type.toLowerCase()+"Bestfit")
+      .style('opacity', 0)
+      .attr({'x1': x(x1), 'y1': y(y1), 'x2': x(x2), 'y2': y(y2)})
+      .transition()
+      .duration(1500)
+      .style('stroke', color(type))
       .style('opacity', 1);
   }
 
@@ -255,8 +285,6 @@ function correlate() {
         .attr("dy", ".35em")
         .style("text-anchor", "end")
         .text(function(d) { return d; });
-
-    updateCorrelation(data);
   }
 
   function pullData(index) {
