@@ -19,4 +19,20 @@ class ReportController
 				when 'json' then res.json docs
 				else res.render 'reports/correlate', {docs: docs, err: err}
 
+	trackLocation: (req, res) ->
+		if _.isEmpty(req.query) || _.isUndefined(req.query.userId)
+			Usage.distinct 'userId', {}, (err, docs) ->
+				if err?
+					console.log err
+				switch req.format
+					when 'json' then res.json docs
+					else res.render 'reports/track_location', {links: docs, err: err}
+		else
+			Usage.find req.query, null, {sort: {startTime: -1}}, (err, docs) ->
+				if err?
+					console.log err
+				switch req.format
+					when 'json' then res.json docs
+					else res.render 'reports/track_location', {docs: docs, err: err}
+
 module.exports = new ReportController
