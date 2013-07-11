@@ -373,7 +373,10 @@ function reports(reports) {
     .enter().append("rect")
       .attr("x", 0)
       .attr("y", function(d, i, j) { return barHeight * j })
-      .attr("width", function(d) { console.log("x : " + d.x + ", x(d.x) : " + x(d.x)); return Math.round(x(d.x)); })
+      .attr("width", function(d) {
+        console.log(d.title + ", d.x : " + d.x + ", x(d.x) : " + x(d.x));
+        return Math.round(x(d.x));
+      })
       .attr("height", barHeight );
 
   var text = layer.selectAll("text")
