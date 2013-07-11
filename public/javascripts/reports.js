@@ -5,9 +5,9 @@ Array.prototype.remove = function(from, to) {
 };
 
 function correlate() {
-  var xAxisMenu = ['하루평균사용시간(ms)', '하루평균앱실행횟수(회)'];
+  var xAxisMenu = ['하루평균사용시간_ms', '하루평균앱실행횟수_회'];
   var xAxisSelected = xAxisMenu[0]
-  var yAxisMenu = ['설문점수', '일평균추정사용시간(시)'];
+  var yAxisMenu = ['설문점수', '일평균추정사용시간_시'];
   var yAxisSelected = yAxisMenu[0]
   var mergedData = [];
   var margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -247,7 +247,6 @@ function correlate() {
   }
 
   function applyData(data) {
-    updateScaleDomain(data);
     updateChart(data);
     svg.selectAll(".dot")
         .data(data)
@@ -298,11 +297,20 @@ function correlate() {
           result[0][xAxisMenu[1]] = Math.round(d.value.nomalizedAppChangingCountPerDay);
         }
       });
-      $.each(mergedData, function(i){       // 지워진 데이터로 인해 인덱스가 밀리는 현상이 없도록 $.each 함수를 사용함.
-        if(typeof(mergedData[i]) === 'undefined' || typeof(mergedData[i].measuredData) === 'undefined') {
-          mergedData.remove(i);
+
+      // mergeData에서 부적합한 데이터를 제가하는 과정에서
+      // 맨 위에 정의한 Array.prototype.remove 함수를 이용하면
+      // length는 21개인데 실제 데이터는 14개가 들어있는 이상한 현상이 생겨서
+      // 부득이하게 임시 배열을 만들어 재구성하는 방법을 택함
+      tempArray = [];
+      mergedData.forEach(function(v) {
+        if(typeof(v) !== 'undefined' &&
+           typeof(v.measuredData) !== 'undefined' &&
+           moment(v.measuredData.endTime).diff(moment(v.measuredData.startTime)) > 86400000) {
+          tempArray.push(v);
         }
       });
+      mergedData = tempArray;
       applyData(mergedData);
     });
   }
@@ -365,7 +373,10 @@ function reports(reports) {
     .enter().append("rect")
       .attr("x", 0)
       .attr("y", function(d, i, j) { return barHeight * j })
-      .attr("width", function(d) { return x(d.x); })
+      .attr("width", function(d) {
+        console.log(d.title + ", d.x : " + d.x + ", x(d.x) : " + x(d.x));
+        return Math.round(x(d.x));
+      })
       .attr("height", barHeight );
 
   var text = layer.selectAll("text")
