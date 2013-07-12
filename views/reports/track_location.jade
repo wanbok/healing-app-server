@@ -1,41 +1,41 @@
 extends ../layout
 
 block content
-	- if (typeof(docs) !== 'undefined')
-		link(rel='stylesheet', href='/stylesheets/track_location.css')
-		script(src='http://www.google.com/jsapi')
-		script(type='text/javascript', src='http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclusterer/1.0/src/markerclusterer_compiled.js')
-		script(type='text/javascript', charset='UTF-8', src='http://maps.googleapis.com/maps/api/js?key=AIzaSyBYKzt9H_fsKohlZiCWn7BAWglmpz3vf0g&v=3&sensor=false')
-		script(type='text/javascript', src='/javascripts/track_location.js')
-		script
-			trackLocation(!{JSON.stringify(docs)});
+  - if (typeof(docs) !== 'undefined')
+    link(rel='stylesheet', href='/stylesheets/track_location.css')
+    script(src='http://www.google.com/jsapi')
+    script(type='text/javascript', src='http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclusterer/1.0/src/markerclusterer_compiled.js')
+    script(type='text/javascript', charset='UTF-8', src='http://maps.googleapis.com/maps/api/js?key=AIzaSyBYKzt9H_fsKohlZiCWn7BAWglmpz3vf0g&v=3&sensor=false')
+    script(type='text/javascript', src='/javascripts/track_location.js')
+    script
+      trackLocation(!{JSON.stringify(docs)});
 
-		div#map-container
-			div#map
-		div#inline-actions
-			//- span Max zoom level:
-			//- 	select#zoom
-			//- 		option(value="-1") Default
-			//- 		option(value="7")7
-			//- 		option(value="8")8
-			//- 		option(value="9")9
-			//- 		option(value="10")10
-			//- 		option(value="11")11
-			//- 		option(value="12")12
-			//- 		option(value="13")13
-			//- 		option(value="14")14
+    div#map-container
+      div#map
+    div#inline-actions
+      //- span Max zoom level:
+      //-   select#zoom
+      //-     option(value="-1") Default
+      //-     option(value="7")7
+      //-     option(value="8")8
+      //-     option(value="9")9
+      //-     option(value="10")10
+      //-     option(value="11")11
+      //-     option(value="12")12
+      //-     option(value="13")13
+      //-     option(value="14")14
 
-			//- span.item Cluster size:
-			//- 	select#size
-			//- 		option(value="-1") Default
-			//- 		option(value="40")40
-			//- 		option(value="50")50
-			//- 		option(value="70")70
-			//- 		option(value="80")80
-			input#refresh.item(type="button", value="Refresh Map")
-				a#clear(href="#") Clear
-	- else if (typeof(links) !== 'undefined')
-		ul.nav.nav-pills
-			- for link in links
-				li
-					a.btn.btn-link(href="/track_location?userId=#{encodeURIComponent(link)}")=link
+      //- span.item Cluster size:
+      //-   select#size
+      //-     option(value="-1") Default
+      //-     option(value="40")40
+      //-     option(value="50")50
+      //-     option(value="70")70
+      //-     option(value="80")80
+      input#refresh.item(type="button", value="Refresh Map")
+        a#clear(href="#") Clear
+  - else if (typeof(links) !== 'undefined')
+    ul.nav.nav-pills
+      - for link in links
+        li
+          a.btn.btn-link(href="/track_location?userId=#{encodeURIComponent(link)}")=link
