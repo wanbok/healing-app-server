@@ -11,79 +11,36 @@ class UsageService
 
   aggregateUsagesByParams: (o, callback) ->
     o.map = () ->
-      # raw =
-      #   duration: @duration,
-      #   startTime: @startTime,
-      #   endTime: @endTime
-
       value =
         userId: @userId,
         appPkg: @appPkg,
-        startTime: @startTime,
-        endTime: @endTime,
         duration: @duration,
-        durations: {},
-        # latitude: @latitude,
-        # longitude: @longitude,
-        urlInfo: @urlInfo #,
-        # raw: raw
+        urlInfo: @urlInfo
 
       if startTime? and startTime > value.startTime   # cut off before focus time
-        # value.raw =
-        #   duration: value.duration
-        #   startTime: value.startTime
         value.duration -= Math.abs(startTime - value.startTime)
         value.startTime = startTime
 
       if endTime? and endTime < value.endTime         # cut off after focus time
-        # value.raw =
-        #   duration: value.duration
-        #   endTime: value.endTime
         value.duration -= Math.abs(endTime - value.endTime)
         value.endTime = endTime
 
       emit @appPkg, value
 
     o.reduce = (k, vals) ->
-      # raw =
-      #   duration: @duration,
-      #   startTime: @startTime,
-      #   endTime: @endTime
-
       reducedValue =
         userId: vals[0].userId,
         appPkg: vals[0].appPkg,
-        startTime: vals[0].startTime,
-        endTime: vals[vals.length - 1].endTime,
         duration: 0,
-        durations: {},
-        # latitude: 0,
-        # longitude: 0,
-        urlInfo: vals[0].urlInfo #,
-        # raw: raw
+        urlInfo: vals[0].urlInfo
 
       for val in vals
-        #startTime is date as number
-        #endTime is date as number
-        val.startTime = if val.startTime instanceof Date then val.startTime.getTime() else val.startTime
-        val.endTime = if val.endTime instanceof Date then val.endTime.getTime() else val.endTime
-
-        while val.duration > 0
-          previousStartTime = val.startTime
-          next = new Date(val.startTime + 60 * 60 * 1000)
-          val.startTime = new Date(next.getFullYear(), next.getMonth(), next.getDate(), next.getHours(), 0, 0, 0).getTime()
-          duration = Math.min(val.duration, val.startTime - previousStartTime)
-          previousStartTime = new Date(previousStartTime)
-          keyDate = new Date(previousStartTime.getFullYear(), previousStartTime.getMonth(), previousStartTime.getDate(), previousStartTime.getHours(), 0, 0, 0)
-          key = new String(keyDate.getFullYear())
-          key += if (keyDate.getMonth() + 1) < 10 then "0" else ""  # 한자리수 월단위를 0x로. (e.g. 2월 => 02)
-          key += keyDate.getMonth() + 1
-          key += if keyDate.getDate() < 10 then "0" else ""         # 한자리수 일단위를 0x로. (e.g. 5일 => 05)
-          key += keyDate.getDate()
-          reducedValue.durations[key] = reducedValue.durations[key] || 0
-          reducedValue.durations[key] += duration
-          reducedValue.duration += duration
-          val.duration -= duration
+        reducedValue.duration += val.duration
+        unless val.urlInfo is null
+          if reducedValue.urlInfo is null
+            reducedValue.urlInfo = val.urlInfo
+          else
+            reducedValue.urlInfo = reducedValue.urlInfo + ", " + val.urlInfo
 
       return reducedValue
 
@@ -163,6 +120,55 @@ class UsageService
       reducedValue.nomalizedAppChangingCountPerDay = reducedValue.count * ((24*60*60*1000) / (reducedValue.endTime - reducedValue.startTime))
       reducedValue.startTime = new Date(reducedValue.startTime)
       reducedValue.endTime = new Date(reducedValue.endTime)
+      return reducedValue
+
+    @mapReduce o, callback
+
+  aggregateUsagesForScopedReport: (query, callback) ->
+    o = {}
+    o.query = query || {}
+    o.map = () ->
+      value =
+        userId: @userId,
+        startTime: @startTime,
+        endTime: @endTime,
+        duration: @duration,
+        durations: {}
+
+      emit @userId, value
+
+    o.reduce = (k, vals) ->
+      reducedValue =
+        userId: vals[0].userId,
+        startTime: vals[0].startTime,
+        endTime: vals[vals.length - 1].endTime,
+        duration: 0,
+        durations: {}
+
+      vals.forEach (val) ->
+        val.startTime = if val.startTime instanceof Date then val.startTime.getTime() else val.startTime
+        val.endTime = if val.endTime instanceof Date then val.endTime.getTime() else val.endTime
+
+        hour = 60 * 60 * 1000
+        while val.duration > 0
+          previousStartTime = val.startTime
+          nextHour = new Date(val.startTime + hour)
+          val.startTime = new Date(nextHour.getFullYear(), nextHour.getMonth(), nextHour.getDate(), nextHour.getHours(), 0, 0, 0).getTime()
+          duration = Math.min(val.duration, val.startTime - previousStartTime)
+          previousStartTime = new Date(previousStartTime)
+          keyDate = new Date(previousStartTime.getFullYear(), previousStartTime.getMonth(), previousStartTime.getDate(), previousStartTime.getHours(), 0, 0, 0)
+          key = new String(keyDate.getFullYear())
+          key += if (keyDate.getMonth() + 1) < 10 then "0" else ""  # 한자리수 월단위를 0x로. (e.g. 2월 => 02)
+          key += keyDate.getMonth() + 1
+          key += if keyDate.getDate() < 10 then "0" else ""         # 한자리수 일단위를 0x로. (e.g. 5일 => 05)
+          key += keyDate.getDate()
+          key += if keyDate.getHours() < 10 then "0" else ""        # 한자리수 시단위를 0x로. (e.g. 5시 => 05)
+          key += keyDate.getHours()
+          reducedValue.durations[key] = reducedValue.durations[key] || 0
+          reducedValue.durations[key] += duration
+          reducedValue.duration += duration
+          val.duration -= duration
+
       return reducedValue
 
     @mapReduce o, callback
