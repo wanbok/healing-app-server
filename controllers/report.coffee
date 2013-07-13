@@ -4,35 +4,51 @@ Usage = require '../models/usage'
 # Report model's CRUD controller.
 class ReportController 
 
-	# Lists all reports
-	report: (req, res) ->
-		UsageService.usagesByParams req.query, (err, reports) ->
-			switch req.format
-				when 'json' then res.json reports
-				else res.render 'reports/d3', {reports: reports, err: err}
+  # Lists all reports
+  report: (req, res) ->
+    if req.format isnt 'json' && (_.isEmpty(req.query) || _.isUndefined(req.query.userId))
+      Usage.distinct 'userId', {}, (err, docs) ->
+        if err?
+          console.log err
+        res.render 'reports/reports', {links: docs, err: err}
+    else
+      UsageService.usagesByParams req.query, (err, docs) ->
+        switch req.format
+          when 'json' then res.json docs
+          else res.render 'reports/reports', {reports: docs, err: err}
 
-	correlate: (req, res) ->
-		UsageService.averageUsagesEachUsers req.query, (err, docs) ->
-			if err?
-			  console.log err
-			switch req.format
-				when 'json' then res.json docs
-				else res.render 'reports/correlate', {docs: docs, err: err}
+  correlate: (req, res) ->
+    switch req.format
+      when 'json'
+        UsageService.averageUsagesEachUsers req.query, (err, docs) ->
+          if err?
+            console.log err
+          res.json docs
+      else res.render 'reports/correlate'
 
-	trackLocation: (req, res) ->
-		if _.isEmpty(req.query) || _.isUndefined(req.query.userId)
-			Usage.distinct 'userId', {}, (err, docs) ->
-				if err?
-					console.log err
-				switch req.format
-					when 'json' then res.json docs
-					else res.render 'reports/track_location', {links: docs, err: err}
-		else
-			Usage.find req.query, null, {sort: {startTime: -1}}, (err, docs) ->
-				if err?
-					console.log err
-				switch req.format
-					when 'json' then res.json docs
-					else res.render 'reports/track_location', {docs: docs, err: err}
+  trackLocation: (req, res) ->
+    if _.isEmpty(req.query) || _.isUndefined(req.query.userId)
+      Usage.distinct 'userId', {}, (err, docs) ->
+        if err?
+          console.log err
+        switch req.format
+          when 'json' then res.json docs
+          else res.render 'reports/track_location', {links: docs, err: err}
+    else
+      Usage.find req.query, null, {sort: {startTime: -1}}, (err, docs) ->
+        if err?
+          console.log err
+        switch req.format
+          when 'json' then res.json docs
+          else res.render 'reports/track_location', {docs: docs, err: err}
+
+  scopedReport: (req, res) ->
+    switch req.format
+      when 'json'
+        UsageService.aggregateUsagesForScopedReport req.query, (err, docs) ->
+          if err?
+            console.log err
+          res.json docs
+      else res.render 'reports/scoped_report'
 
 module.exports = new ReportController

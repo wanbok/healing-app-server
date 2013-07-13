@@ -11,7 +11,7 @@ function correlate() {
   var yAxisSelected = yAxisMenu[0]
   var mergedData = [];
   var margin = {top: 20, right: 20, bottom: 30, left: 40},
-      width = 800 - margin.left - margin.right,
+      width = 960 - margin.left - margin.right,
       height = 800 - margin.top - margin.bottom;
 
   var x = d3.scale.linear()
@@ -286,7 +286,7 @@ function correlate() {
         .text(function(d) { return d; });
   }
 
-  function pullData(index) {
+  function pullData() {
     d3.json("/correlate.json", function(error, data) {
       data.forEach(function(d){
         var userId = d.value.userId.replace(/\+82/, "0");

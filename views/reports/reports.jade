@@ -1,0 +1,20 @@
+extends ../layout
+
+block content
+  - if (typeof(reports) !== 'undefined')
+    script(type='text/javascript', src='/javascripts/d3.v3/d3.v3.min.js')
+    link(rel='stylesheet', href='/stylesheets/reports.css')
+
+    //- div.btn-group(data-toggle="buttons-radio")
+    //-   button.btn.d3-button(value='grouped') Grouped
+    //-   button.btn.d3-button.active(value='stacked') Stacked
+
+    script(type='text/javascript', src='/javascripts/reports.js')
+    script
+      reports(!{JSON.stringify(reports)});
+    
+  - else if (typeof(links) !== 'undefined')
+    ul.nav.nav-pills
+      - for link in links
+        li
+          a.btn.btn-link(href="/reports?userId=#{encodeURIComponent(link)}")=link

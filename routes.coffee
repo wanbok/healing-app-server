@@ -14,6 +14,8 @@ module.exports = ->
 	@get '/correlate.json', addingFormat, require('./controllers/report').correlate
 	@get '/track_location', require('./controllers/report').trackLocation
 	@get '/track_location.json', addingFormat, require('./controllers/report').trackLocation
+	@get '/scoped_report', require('./controllers/report').scopedReport
+	@get '/scoped_report.json', addingFormat, require('./controllers/report').scopedReport
 	# @get '/reports/survey', require('./controllers/report').surveyCorrelation
 
 	# RESTful

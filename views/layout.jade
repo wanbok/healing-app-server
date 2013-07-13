@@ -4,7 +4,7 @@ html(lang='en')
     meta(http-equiv='content-type', content='text/html;charset=UTF-8')
     meta(name='viewport', content='width=device-width,initial-scale=1.0')
 
-    title title
+    title Healing Server
 
     link(rel='icon', href='/favicon.ico')
 
@@ -21,27 +21,59 @@ html(lang='en')
     .navbar.navbar-fixed-top.navbar-inverse
       .navbar-inner
         .container-fluid
-          button.btn.btn-navbar(data-toggle='collapse', data-target='nav-collapse')
-            span.icon-bar
-            span.icon-bar
-            span.icon-bar
-          a.brand(href='/') title
           .nav-collapse.collapse
             ul.nav
-              li.active
+              li#home
+                a(href='/') Home
+              li#user
                 a(href='/users') User
-              li.active
+              li#app
                 a(href='/apps') App
-              li.active
+              li#category
                 a(href='/categories') Category
-              li.active
+              li#usage
                 a(href='/usages') Usage
-              li.active
-                a(href='/reports') Report
-              li.active
+              li#report.dropdown
+                a.dropdown-toggle(data-toggle='dropdown', href='#') Report
+                  b.caret
+                ul.dropdown-menu(role='menu', aria-labelledby='dLabel')
+                  li
+                    a(href='/reports') Report
+                  li
+                    a(href='/correlate') Correlate
+                  li
+                    a(href='/track_location') Track location
+              li#survey
                 a(href='/surveys') Survey
-              li.active
+              li#friendship
                 a(href='/friendships') Friendship
+      script
+        String.prototype.startsWith = function(prefix) {
+          return this.indexOf(prefix) === 0;
+        };
+        var parser = document.createElement('a');
+        parser.href = document.URL;
+        if(parser.pathname.startsWith('/users')) {
+          $(".navbar .nav li#user").addClass('active');
+        } else if(parser.pathname.startsWith('/apps')) {
+          $(".navbar .nav li#app").addClass('active');
+        } else if(parser.pathname.startsWith('/categories')) {
+          $(".navbar .nav li#category").addClass('active');
+        } else if(parser.pathname.startsWith('/usages')) {
+          $(".navbar .nav li#usage").addClass('active');
+        } else if(parser.pathname.startsWith('/reports') ||
+                  parser.pathname.startsWith('/correlate') ||
+                  parser.pathname.startsWith('/track_location')) {
+          $(".navbar .nav li#report").addClass('active');
+        } else if(parser.pathname.startsWith('/surveys')) {
+          $(".navbar .nav li#survey").addClass('active');
+        } else if(parser.pathname.startsWith('/friendships')) {
+          $(".navbar .nav li#friendship").addClass('active');
+        } else {
+          $(".navbar .nav li#home").addClass('active');
+        }
+
+
     .container-fluid
       .row-fluid
         .span12
