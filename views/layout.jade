@@ -2,15 +2,16 @@
 html(lang='en')
   head
     meta(http-equiv='content-type', content='text/html;charset=UTF-8')
-    meta(name='viewport', content='width=device-width,initial-scale=1.0')
 
     title Healing Server
 
-    link(rel='icon', href='/favicon.ico')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
 
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-responsive.min.css')
     link(rel='stylesheet', href='/stylesheets/application.css')
+
+    link(rel='icon', href='/favicon.ico')
 
     script(type='text/javascript', src='/javascripts/jquery.min.js')
     script(type='text/javascript', src='/javascripts/bootstrap.min.js')
@@ -21,6 +22,11 @@ html(lang='en')
     .navbar.navbar-fixed-top.navbar-inverse
       .navbar-inner
         .container-fluid
+          button.btn.btn-navbar(type="button", data-toggle="collapse", data-target=".nav-collapse")
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a.brand(href='/') Healing Server
           .nav-collapse.collapse
             ul.nav
               li#home
@@ -34,9 +40,9 @@ html(lang='en')
               li#usage
                 a(href='/usages') Usage
               li#report.dropdown
-                a.dropdown-toggle(data-toggle='dropdown', href='#') Report
+                a#dLabel.dropdown-toggle(data-toggle='dropdown', href='#') Report
                   b.caret
-                ul.dropdown-menu(role='menu', aria-labelledby='dLabel')
+                ul.dropdown-menu.no-collapse(role='menu', aria-labelledby='dLabel')
                   li
                     a(href='/user_usage') User Usage
                   li
@@ -61,7 +67,7 @@ html(lang='en')
           $(".navbar .nav li#category").addClass('active');
         } else if(parser.pathname.startsWith('/usages')) {
           $(".navbar .nav li#usage").addClass('active');
-        } else if(parser.pathname.startsWith('/reports') ||
+        } else if(parser.pathname.startsWith('/user_usage') ||
                   parser.pathname.startsWith('/correlate') ||
                   parser.pathname.startsWith('/track_location')) {
           $(".navbar .nav li#report").addClass('active');
@@ -73,7 +79,17 @@ html(lang='en')
           $(".navbar .nav li#home").addClass('active');
         }
 
+    script
+      $('.dropdown-toggle').click(function(e) {
+        e.preventDefault();
+        setTimeout($.proxy(function() {
+          if ('ontouchstart' in document.documentElement) {
+            $(this).siblings('.dropdown-backdrop').off().remove();
+          }
+        }, this), 0);
+      });
 
+    .jumbotron
     .container-fluid
       .row-fluid
         .span12
