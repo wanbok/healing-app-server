@@ -5,17 +5,17 @@ Usage = require '../models/usage'
 class ReportController 
 
   # Lists all reports
-  report: (req, res) ->
+  user_usage: (req, res) ->
     if req.format isnt 'json' && (_.isEmpty(req.query) || _.isUndefined(req.query.userId))
       Usage.distinct 'userId', {}, (err, docs) ->
         if err?
           console.log err
-        res.render 'reports/reports', {links: docs, err: err}
+        res.render 'reports/user_usage', {links: docs, err: err}
     else
       UsageService.usagesByParams req.query, (err, docs) ->
         switch req.format
           when 'json' then res.json docs
-          else res.render 'reports/reports', {reports: docs, err: err}
+          else res.render 'reports/user_usage', {reports: docs, err: err}
 
   correlate: (req, res) ->
     switch req.format
