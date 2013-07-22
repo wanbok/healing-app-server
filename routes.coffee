@@ -8,8 +8,8 @@ module.exports = ->
 	# 'Static page' routes
 	@get '/', require('./controllers/home').home
 	@get '/gcm', require('./controllers/gcm').test
-	@get '/reports', require('./controllers/report').report
-	@get '/reports.json', addingFormat, require('./controllers/report').report
+	@get '/user_usage', require('./controllers/report').user_usage
+	@get '/user_usage.json', addingFormat, require('./controllers/report').user_usage
 	@get '/correlate', require('./controllers/report').correlate
 	@get '/correlate.json', addingFormat, require('./controllers/report').correlate
 	@get '/track_location', require('./controllers/report').trackLocation

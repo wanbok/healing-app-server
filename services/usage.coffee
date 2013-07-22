@@ -130,10 +130,12 @@ class UsageService
     o.map = () ->
       value =
         userId: @userId,
-        startTime: @startTime,
-        endTime: @endTime,
+        startTime: if @startTime instanceof Date then @startTime.getTime() else @startTime,
+        endTime: if @endTime instanceof Date then @endTime.getTime() else @endTime,
         duration: @duration,
-        durations: {}
+        duration2: 0,
+        durations: {},
+        count: 1
 
       emit @userId, value
 
@@ -143,31 +145,36 @@ class UsageService
         startTime: vals[0].startTime,
         endTime: vals[vals.length - 1].endTime,
         duration: 0,
-        durations: {}
+        duration2: 0,
+        durations: {},
+        count: 0
 
       vals.forEach (val) ->
-        val.startTime = if val.startTime instanceof Date then val.startTime.getTime() else val.startTime
-        val.endTime = if val.endTime instanceof Date then val.endTime.getTime() else val.endTime
-
         hour = 60 * 60 * 1000
-        while val.duration > 0
-          previousStartTime = val.startTime
-          nextHour = new Date(val.startTime + hour)
-          val.startTime = new Date(nextHour.getFullYear(), nextHour.getMonth(), nextHour.getDate(), nextHour.getHours(), 0, 0, 0).getTime()
-          duration = Math.min(val.duration, val.startTime - previousStartTime)
-          previousStartTime = new Date(previousStartTime)
-          keyDate = new Date(previousStartTime.getFullYear(), previousStartTime.getMonth(), previousStartTime.getDate(), previousStartTime.getHours(), 0, 0, 0)
+        # localtime = new Date().getTimezoneOffset() * 60 * 1000
+        # val.startTime = if val.startTime instanceof Date then val.startTime.getTime() else val.startTime
+        # val.endTime = if val.endTime instanceof Date then val.endTime.getTime() else val.endTime
+        next = val.startTime
+        fullDuration = val.duration
+        reducedValue.duration2 += (val.endTime - val.startTime)
+        while fullDuration > 0
+          previous = next
+          next = previous - (previous % hour) + hour
+          duration = Math.min(fullDuration, next - previous)
+          keyDate = new Date(previous)
           key = new String(keyDate.getFullYear())
-          key += if (keyDate.getMonth() + 1) < 10 then "0" else ""  # 한자리수 월단위를 0x로. (e.g. 2월 => 02)
+          if (keyDate.getMonth() + 1) < 10 then key += "0"          # 한자리수 월단위를 0x로. (e.g. 2월 => 02)
           key += keyDate.getMonth() + 1
-          key += if keyDate.getDate() < 10 then "0" else ""         # 한자리수 일단위를 0x로. (e.g. 5일 => 05)
+          if keyDate.getDate() < 10 then key += "0"                 # 한자리수 일단위를 0x로. (e.g. 5일 => 05)
           key += keyDate.getDate()
-          key += if keyDate.getHours() < 10 then "0" else ""        # 한자리수 시단위를 0x로. (e.g. 5시 => 05)
+          if keyDate.getHours() < 10 then key += "0"                # 한자리수 시단위를 0x로. (e.g. 5시 => 05)
           key += keyDate.getHours()
           reducedValue.durations[key] = reducedValue.durations[key] || 0
           reducedValue.durations[key] += duration
           reducedValue.duration += duration
-          val.duration -= duration
+          fullDuration -= duration
+
+        return
 
       return reducedValue
 

@@ -5,9 +5,9 @@ Array.prototype.remove = function(from, to) {
 };
 
 function correlate() {
-  var xAxisMenu = ['하루평균사용시간_ms', '하루평균앱실행횟수_회'];
+  var xAxisMenu = ['DailyUsageTime', 'DailyExecuteAppCount'];
   var xAxisSelected = xAxisMenu[0]
-  var yAxisMenu = ['설문점수', '일평균추정사용시간_시'];
+  var yAxisMenu = ['SAS', 'SelfDiagnosisUsageTime'];
   var yAxisSelected = yAxisMenu[0]
   var mergedData = [];
   var margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -108,6 +108,16 @@ function correlate() {
     d3.select('#xLabel')
       .text(xAxisSelected);
 
+    if (xAxisSelected === xAxisMenu[0]) {
+      d3.selectAll('#xAxis .tick text')
+        .text(function(d) { 
+          d = (d / (60 * 1000)).toFixed();
+          var hours = Math.floor(d / 60);
+          var minutes = pad((d % 60), 2);
+          return hours + ":" + minutes;
+        });
+    }
+
     d3.select('#yAxis')
       .transition()
       .call(yAxis);
@@ -121,8 +131,6 @@ function correlate() {
   }
 
   function drawBackground(data) {
-    updateScaleDomain(data);
-
     svg.append("g")
         .attr("id", "xAxis")
         .classed("axis", true)
@@ -163,6 +171,7 @@ function correlate() {
     d3.select('svg g.chart')
       .append('line')
       .attr('id', 'fBestfit');
+
   }
 
   function getCorrelation(xArray, yArray) {
@@ -333,22 +342,22 @@ function correlate() {
 }
 
 function reports(reports) {
-  // layer is appPkg
-  // sample is user
+  reports.sort(function(a, b) {
+    return b.value.duration - a.value.duration;
+  });
   var n = reports.length,
       m = 1,
       stack = d3.layout.stack(),
       layers = stack(reports.map(function(d) { return calculateLayer(d); }));
-  var xMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.x; }); });
-  var margin = {top: 40, right: 10, bottom: 20, left: 10},
-      inset = {right: 150},
+  var xMax = d3.max(layers, function(layer) { return Number(layer[0].x); });
+  var margin = {top: 40, right: 15, bottom: 20, left: 15},
       barHeight = 25,
       width = 960 - margin.left - margin.right,
       height = (barHeight * n);
 
   var x = d3.scale.linear()
       .domain([0, xMax])
-      .range([0, width - inset.right]);
+      .range([0, width]);
 
   var y = d3.scale.ordinal()
       .domain([reports[0].value.userId])
@@ -371,11 +380,11 @@ function reports(reports) {
   var rect = layer.selectAll("rect")
       .data(function(d) { return d; })
     .enter().append("rect")
-      .attr("x", 0)
+      .attr("x", x(0))
       .attr("y", function(d, i, j) { return barHeight * j })
       .attr("width", function(d) {
         console.log(d.title + ", d.x : " + d.x + ", x(d.x) : " + x(d.x));
-        return Math.round(x(d.x));
+        return x(d.x);
       })
       .attr("height", barHeight );
 
@@ -390,11 +399,20 @@ function reports(reports) {
 
   var xAxis = d3.svg.axis()
       .scale(x)
-      .orient("top");
+      .orient("top")
+      .ticks(18);
 
   svg.append("g")
-      .attr("class", "x axis")
-      .call(xAxis);
+    .attr("class", "x axis")
+    .call(xAxis);
+
+  svg.selectAll(".x.axis .tick text")
+    .text(function(d) { 
+      d = (d / (60 * 1000)).toFixed();
+      var hours = Math.floor(d / 60);
+      var minutes = pad((d % 60), 2);
+      return hours + ":" + minutes;
+    });
 }
 
 function calculateLayer(data) {
@@ -404,24 +422,5 @@ function calculateLayer(data) {
   // };
   // return a.map(function(d, i) { return {x: data[i]._id, y: d}; });
 
-  return [{y: data.value.userId, x: data.value.duration, title: data.value.appPkg}]
-}
-// Inspired by Lee Byron's test data generator.
-function bumpLayer(n, o) {
-
-  function bump(a) {
-    var x = 1 / (.1 + Math.random()),
-        y = 2 * Math.random() - .5,
-        z = 10 / (.1 + Math.random());
-    for (var i = 0; i < n; i++) {
-      var w = (i / n - y) * z;
-      a[i] += x * Math.exp(-w * w);
-    }
-  }
-
-  var a = [], i;
-  for (i = 0; i < n; ++i) a[i] = o + o * Math.random();
-  for (i = 0; i < 5; ++i) bump(a);
-  console.log(a);
-  return a.map(function(d, i) { return {x: i, y: Math.max(0, d)}; });
+  return [{y: data.value.userId, x: data.value.duration.toFixed(), title: data.value.appPkg}]
 }
