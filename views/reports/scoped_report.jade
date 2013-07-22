@@ -11,5 +11,6 @@ block content
   - else if (typeof(links) !== 'undefined')
     ul.nav.nav-pills
       - for link in links
-        li
-          a.btn.btn-link(href="/scoped_report?userId=#{encodeURIComponent(link)}")=link
+        - if (link !== '')
+          li
+            a.btn.btn-link.custom(href="/scoped_report?userId=#{encodeURIComponent(link)}")=link
