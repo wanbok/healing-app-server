@@ -10,6 +10,6 @@ class HomeController
 	# @param response
 	home: (request, response) ->
 		response.render "index",
-			title: 'Welcome!'
+			title: 'Smartphone Addiction Management System!'
 
 module.exports = new HomeController

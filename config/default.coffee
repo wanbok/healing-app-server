@@ -41,6 +41,12 @@ module.exports = ->
 	
 	# Enable cookies
 	@use express.cookieParser('your secret here')
+
+	# session setting
+	@use express.session({
+		secrete: 'my screte',
+		maxAge: 3600000
+	})
 	
 	# Mount application routes
 	@use @router

@@ -1,0 +1,12 @@
+h1 LOG IN
+
+form(method="POST", action="/session/auth")
+	p 
+		label(for="username") User Name: <br />
+		input#username(name="username");
+	p 
+		label(for="password") Password: <br />
+		input#password(type="password", name="password");
+	p 
+		input(type="submit", value="Log in");
+

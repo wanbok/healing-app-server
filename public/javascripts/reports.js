@@ -315,7 +315,7 @@ function correlate() {
       mergedData.forEach(function(v) {
         if(typeof(v) !== 'undefined' &&
            typeof(v.measuredData) !== 'undefined' &&
-           moment(v.measuredData.endTime).diff(moment(v.measuredData.startTime)) > 86400000) {
+           moment(v.measuredData.endTime).diff(moment(v.measuredData.startTime)) > 7*86400000) {
           tempArray.push(v);
         }
       });
