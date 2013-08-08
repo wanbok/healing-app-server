@@ -14,7 +14,9 @@ block content
       reports(!{JSON.stringify(reports)});
     
   - else if (typeof(links) !== 'undefined')
-    ul.nav.nav-pills
+    // heejune-2013.08.16
+    //ul.nav.nav-pills
+    ul
       - for link in links
         - if (link !== '')
           li

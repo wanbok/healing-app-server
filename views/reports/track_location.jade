@@ -35,7 +35,9 @@ block content
       input#refresh.item(type="button", value="Refresh Map")
         a#clear(href="#") Clear
   - else if (typeof(links) !== 'undefined')
-    ul.nav.nav-pills
+    // heejune 2013.08.06
+    //ul.nav.nav-pills
+    ul
       - for link in links
         - if (link !== '')
           li
